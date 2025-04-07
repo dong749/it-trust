@@ -6,6 +6,8 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.test.backend.common.ErrorCode;
 import com.test.backend.config.HIBPConfig;
+import com.test.backend.config.MailBoxConfig;
+import com.test.backend.exception.BusinessException;
 import com.test.backend.exception.ThrowUtils;
 import com.test.backend.mapper.HIBPBreachMapper;
 import com.test.backend.model.dto.HIBPBreachDTO;
@@ -30,17 +32,24 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
     @Resource
     private HIBPConfig hibpConfig;
 
+    @Resource
+    private MailBoxConfig mailBoxConfig;
+
     @Override
     public List<HIBPBreachDTO> detect(String email)
     {
+        ThrowUtils.throwIf(email.isEmpty(), ErrorCode.SYSTEM_ERROR);
+        if (!isEmailValid(email))
+        {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Email is not valid");
+        }
+
         String apiKey = hibpConfig.getApiKey();
         String userAgent = hibpConfig.getUserAgent();
         String apiUrl = hibpConfig.getApiUrl();
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
-
-        ThrowUtils.throwIf(email.isEmpty(), ErrorCode.SYSTEM_ERROR);
 
         try {
             HttpGet httpGet = new HttpGet(apiUrl + email);
@@ -85,5 +94,33 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
         } catch (IOException e) {
             throw new RuntimeException("System Error: " + e.getMessage(), e);
         }
+    }
+
+    private boolean isEmailValid(String email)
+    {
+        String apiKey = mailBoxConfig.getAccessKey();
+        String baseUrl = mailBoxConfig.getApiUrl();
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+
+        try{
+            String url = baseUrl + "?access_key=" + apiKey + "&email=" + email + "&smtp=1&format=1";
+            HttpGet httpGet = new HttpGet(url);
+            response = httpClient.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200)
+            {
+                HttpEntity entity = response.getEntity();
+                String json = EntityUtils.toString(entity);
+                JSONObject jsonObject = JSONUtil.parseObj(json);
+                boolean formatValid = jsonObject.getBool("format_valid", false);
+                boolean smtpCheck = jsonObject.getBool("smtp_check", false);
+                return formatValid && smtpCheck;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("System Error: " + e.getMessage(), e);
+        }
+        return false;
     }
 }
