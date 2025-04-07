@@ -59,4 +59,8 @@ hibp:
   user-agent: it-trust-app/1.0 (renxudong749@gmail.com)
   api-url: https://haveibeenpwned.com/api/v3/breachedaccount/
 
+mailboxlayer:
+  access-key: f9462506c321714634a795952265113b
+  api-url: http://apilayer.net/api/check
+
 
