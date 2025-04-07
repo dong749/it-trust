@@ -54,3 +54,9 @@ knife4j:
         api-rule-resources:
           - com.test.backend.controller
 
+hibp:
+  api-key: 34ce6973450641418265e0606ab51e96
+  user-agent: it-trust-app/1.0 (renxudong749@gmail.com)
+  api-url: https://haveibeenpwned.com/api/v3/breachedaccount/
+
+
