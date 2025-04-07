@@ -63,7 +63,11 @@ export default [
     ],
   },
   
-
+  {
+    path: 'detect',
+    name: 'Detection',
+    component: './DetectPage',
+  },
 
   {
     path: '*',
