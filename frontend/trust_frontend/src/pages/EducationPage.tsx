@@ -38,86 +38,95 @@ const CardGrid: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', // 5列网格
-        gap: '12px',
-        padding: '20px',
-        justifyItems: 'center',
-      }}
-    >
-      {/* 第一排：卡片1-3，放在 1,3,5 列 */}
-      {cardData.slice(0, 3).map((item, index) => (
-        <div
-          key={index}
-          onClick={() => navigate(item.route)}
-          style={{
-            gridColumn: (index + 1) * 2 - 1, // 放在1,3,5列
-            maxWidth: '220px',
-            height: '280px',
-            borderRadius: '10px',
-            padding: '16px',
-            cursor: 'pointer',
-            textAlign: 'center',
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            transition: 'transform 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.03)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1.0)';
-          }}
-        >
-          <img src={item.img} alt="card-img" style={{ width: '150px', marginBottom: '12px' }} />
-          <div style={{ fontSize: '25px', fontWeight: 600, color: '#fff', marginBottom: '6px' }}>
-            {item.title}
-          </div>
-          <div style={{ fontSize: '14px', color: '#e0e0e0' }}>{item.description}</div>
-        </div>
-      ))}
+    <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+      {/* 大标题 */}
+      <h1
+        style={{
+          fontSize: '40px',
+          color: '#fff',
+          fontWeight: 'bold',
+          marginBottom: '12px',
+        }}
+      >
+        Know More About Data and Data Security
+      </h1>
 
-      {/* 第二排：卡片4-5，放在 2,4 列 */}
-      {cardData.slice(3).map((item, index) => (
-        <div
-          key={index + 3}
-          onClick={() => navigate(item.route)}
+      {/* 简介文字 */}
+      <p
+        style={{
+          fontSize: '18px',
+          color: '#d0d0d0',
+          maxWidth: '800px',
+          margin: '0 auto 40px',
+          lineHeight: '1.6',
+        }}
+      >
+        This website is dedicated to helping users understand what personal privacy data is, data
+        security and its importance, as well as the risks and coping methods that may be faced in
+        data leakage. Through the following content, you can systematically learn how to effectively
+        protect your data security.
+      </p>
+
+      {/* 卡片区域 */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '24px',
+        }}
+      >
+        {cardData.map((item, index) => (
+          <div
+            key={index}
+            onClick={() => navigate(item.route)}
+            style={{
+              width: '220px',
+              height: '280px',
+              borderRadius: '10px',
+              padding: '16px',
+              cursor: 'pointer',
+              textAlign: 'center',
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.03)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1.0)';
+            }}
+          >
+            <img src={item.img} alt="card-img" style={{ width: '150px', marginBottom: '12px' }} />
+            <div style={{ fontSize: '20px', fontWeight: 600, color: '#fff', marginBottom: '6px' }}>
+              {item.title}
+            </div>
+            <div style={{ fontSize: '14px', color: '#e0e0e0' }}>{item.description}</div>
+          </div>
+        ))}
+      </div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <div>
+        <p
           style={{
-            gridColumn: index === 0 ? 2 : 4,
-            maxWidth: '220px',
-            height: '280px',
-            borderRadius: '10px',
-            padding: '16px',
-            cursor: 'pointer',
-            textAlign: 'center',
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            transition: 'transform 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.03)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1.0)';
+            fontSize: '18px',
+            color: '#d0d0d0',
+            maxWidth: '800px',
+            margin: '0 auto 40px',
+            lineHeight: '1.6',
           }}
         >
-          <img src={item.img} alt="card-img" style={{ width: '150px', marginBottom: '12px' }} />
-          <div style={{ fontSize: '25px', fontWeight: 600, color: '#fff', marginBottom: '6px' }}>
-            {item.title}
-          </div>
-          <div style={{ fontSize: '14px', color: '#e0e0e0' }}>{item.description}</div>
-        </div>
-      ))}
+          According Your Requirement, You Can select One Part Above to learn
+        </p>
+      </div>
     </div>
   );
 };

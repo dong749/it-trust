@@ -11,7 +11,9 @@ import com.test.backend.exception.BusinessException;
 import com.test.backend.exception.ThrowUtils;
 import com.test.backend.mapper.HIBPBreachMapper;
 import com.test.backend.model.dto.HIBPBreachDTO;
+import com.test.backend.model.entity.BreachLog;
 import com.test.backend.model.entity.HIBPBreach;
+import com.test.backend.service.BreachLogService;
 import com.test.backend.service.DetectDataService;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -33,6 +35,9 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
     private HIBPConfig hibpConfig;
 
     @Resource
+    private BreachLogService breachLogService;
+
+    @Resource
     private MailBoxConfig mailBoxConfig;
 
     @Override
@@ -52,7 +57,7 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
         CloseableHttpResponse response = null;
 
         try {
-            HttpGet httpGet = new HttpGet(apiUrl + email);
+            HttpGet httpGet = new HttpGet(apiUrl + email + "?truncateResponse=false");
             httpGet.setHeader("User-Agent", userAgent);
             httpGet.setHeader("Accept", "application/json");
             httpGet.setHeader("hibp-api-key", apiKey);
@@ -61,6 +66,9 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 404)
             {
+                BreachLog breachlog = new BreachLog();
+                breachlog.setIsBreached(0);
+                breachLogService.save(breachlog);
                 return new ArrayList<>();
             }
             else if (statusCode == 200)
@@ -71,10 +79,14 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
 
                 List<HIBPBreachDTO> dtoList = new ArrayList<>();
 
+                BreachLog breachlog = new BreachLog();
+                breachlog.setIsBreached(1);
+                breachLogService.save(breachlog);
+
                 for (Object obj : jsonArray)
                 {
                     JSONObject jsonObject = (JSONObject) obj;
-
+                    System.out.println(jsonObject.toString());
                     HIBPBreachDTO dto = new HIBPBreachDTO();
                     dto.setTitle(jsonObject.getStr("Title"));
                     dto.setDomain(jsonObject.getStr("Domain"));
@@ -82,7 +94,6 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
                     dto.setDescription(jsonObject.getStr("Description"));
                     dto.setDataTypes(jsonObject.getJSONArray("DataClasses").toList(String.class));
                     dto.setLogoUrl(jsonObject.getStr("LogoPath"));
-
                     dtoList.add(dto);
                 }
                 return dtoList;
