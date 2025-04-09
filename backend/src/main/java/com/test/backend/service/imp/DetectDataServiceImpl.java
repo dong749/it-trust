@@ -8,13 +8,13 @@ import com.test.backend.common.ErrorCode;
 import com.test.backend.config.HIBPConfig;
 import com.test.backend.config.MailBoxConfig;
 import com.test.backend.exception.BusinessException;
-import com.test.backend.exception.ThrowUtils;
 import com.test.backend.mapper.HIBPBreachMapper;
 import com.test.backend.model.dto.HIBPBreachDTO;
 import com.test.backend.model.entity.BreachLog;
 import com.test.backend.model.entity.HIBPBreach;
 import com.test.backend.service.BreachLogService;
 import com.test.backend.service.DetectDataService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -43,7 +43,6 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
     @Override
     public List<HIBPBreachDTO> detect(String email)
     {
-        ThrowUtils.throwIf(email.isEmpty(), ErrorCode.SYSTEM_ERROR);
         if (!isEmailValid(email))
         {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Email is not valid");
@@ -109,6 +108,10 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
 
     private boolean isEmailValid(String email)
     {
+        if (StringUtils.isEmpty(email))
+        {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "Email is empty");
+        }
         String apiKey = mailBoxConfig.getAccessKey();
         String baseUrl = mailBoxConfig.getApiUrl();
 
