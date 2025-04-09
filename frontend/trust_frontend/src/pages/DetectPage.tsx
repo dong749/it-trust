@@ -8,9 +8,10 @@ const COLORS = ['#00C49F', '#FF8042'];
 
 const DetectPage: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [breachStats, setBreachStats] = useState<{ name: string; value: number }[]>([]);
-  const [breachCount, setBreachCount] = useState<number | null>(null); // null 表示还未查询
-  const [loading, setLoading] = useState(false); // loading 状态
+  const [breachCount, setBreachCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // 页面加载时请求饼图数据
   useEffect(() => {
@@ -34,12 +35,21 @@ const DetectPage: React.FC = () => {
 
   // 点击搜索按钮
   const handleSearch = async () => {
+    setErrorMsg(''); // 清除旧的错误信息
+
     if (!email) {
-      alert('Please enter an email address.');
+      setErrorMsg('Please enter an email address.');
       return;
     }
 
-    setLoading(true); // 开始 loading
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
+    setBreachCount(null);
 
     try {
       const res = await detectBreachUsingGet({ email });
@@ -47,9 +57,9 @@ const DetectPage: React.FC = () => {
       setBreachCount(count);
     } catch (err) {
       console.error('Error detecting breach:', err);
-      alert('Failed to detect breach, please try again.');
+      setErrorMsg('Failed to detect breach, please try again.');
     } finally {
-      setLoading(false); // 结束 loading
+      setLoading(false);
     }
   };
 
@@ -130,6 +140,13 @@ const DetectPage: React.FC = () => {
         </button>
       </div>
 
+      {/* 错误提示信息区域 */}
+      {errorMsg && (
+        <div style={{ color: 'red', marginTop: '12px', fontWeight: 500 }}>
+          {errorMsg}
+        </div>
+      )}
+
       {/* 加载动画 */}
       {loading && (
         <div style={{ marginTop: '20px' }}>
@@ -169,10 +186,10 @@ const DetectPage: React.FC = () => {
               marginBottom: '40px',
             }}
           >
-            {[
+            {[ 
               'Use strong, unique passwords for each site',
               'Enable Two-Factor Authentication (2FA)',
-              'Avoid clicking suspicious links or attachments',
+              'Avoid clicking suspicious links or attachments'
             ].map((tip, index) => (
               <div
                 key={index}

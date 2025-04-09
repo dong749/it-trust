@@ -16,9 +16,9 @@ const cardData = [
   },
   {
     img: '/Infor-data-leak.svg',
-    title: 'Data Breach',
-    description: 'Understand What a Data Breach is',
-    route: '/learning/DataBreach',
+    title: 'Misinformation',
+    description: 'Understand What misinformation is',
+    route: '/learning/Misinformation',
   },
   {
     img: '/Infor-hacking.svg',

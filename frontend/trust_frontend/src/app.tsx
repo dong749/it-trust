@@ -1,4 +1,4 @@
-import { Footer, Question, SelectLang } from '@/components';
+import { Footer, Question } from '@/components';
 import { LinkOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
@@ -7,7 +7,6 @@ import { Link } from '@umijs/max';
 import React from 'react';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
-
 const isDev = process.env.NODE_ENV === 'development';
 
 /**
@@ -25,7 +24,7 @@ export async function getInitialState(): Promise<{
 // ProLayout 配置
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
+    actionsRender: () => [<Question key="doc" />],
     // 去掉头像与水印相关配置
     footerRender: () => <Footer />,
     // 不再做页面跳转拦截
@@ -86,6 +85,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * 请求配置
  */
 export const request = {
+  // baseURL: 'https://it-trust.tech',
   baseURL: 'http://localhost:8101',
   withCredentials: true,
   ...errorConfig,
