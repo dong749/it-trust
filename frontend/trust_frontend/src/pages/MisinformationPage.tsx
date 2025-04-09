@@ -90,7 +90,7 @@ const MisinformationPage: React.FC = () => {
 
       <div style={{ marginTop: '40px', borderRadius: '12px', overflow: 'hidden' }}>
         <iframe
-          src="https://www.youtube.com/embed/rGfhZzQ2F-k"
+          src="https://www.youtube.com/embed/UAy6PI5UtSU"
           title="How Misinformation Spreads"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
