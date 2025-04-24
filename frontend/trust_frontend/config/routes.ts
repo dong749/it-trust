@@ -67,6 +67,12 @@ export default [
   },
 
   {
+    path: 'quiz',
+    name: 'Scenario Question',
+    component: './QuizPage',
+  },
+
+  {
     path: '*',
     layout: false,
     component: './404',
