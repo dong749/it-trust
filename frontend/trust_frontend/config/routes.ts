@@ -66,10 +66,28 @@ export default [
     component: './DetectPage',
   },
 
+  // {
+  //   path: 'quiz',
+  //   name: 'Scenario Question',
+  //   component: './QuizPage',
+  // },
+
   {
     path: 'quiz',
     name: 'Scenario Question',
-    component: './QuizPage',
+    icon: 'smile',
+    routes: [
+      {
+        path: '',
+        component: './QuizPage',
+      },
+      {
+        path: 'step',
+        name: 'Quiz Step',
+        component: './QuizStepPage',
+        hideInMenu: true,
+      },
+    ],
   },
 
   {

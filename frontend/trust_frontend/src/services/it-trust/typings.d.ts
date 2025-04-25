@@ -11,6 +11,18 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListQuestionBody_ = {
+    code?: number;
+    data?: QuestionBody[];
+    message?: string;
+  };
+
+  type BaseResponseListQuestionVO_ = {
+    code?: number;
+    data?: QuestionVO[];
+    message?: string;
+  };
+
   type BreachLogVO = {
     count?: number;
     isBreach?: number;
@@ -21,6 +33,11 @@ declare namespace API {
     email: string;
   };
 
+  type getQuestionByTypeUsingGETParams = {
+    /** category */
+    category: string;
+  };
+
   type HIBPBreachDTO = {
     breachDate?: string;
     dataTypes?: string[];
@@ -28,5 +45,22 @@ declare namespace API {
     domain?: string;
     logoUrl?: string;
     title?: string;
+  };
+
+  type QuestionBody = {
+    id?: number;
+    isDelete?: number;
+    questionCategory?: string;
+    questionDetails?: string;
+    questionType?: number;
+  };
+
+  type QuestionVO = {
+    optionA?: string;
+    optionB?: string;
+    optionC?: string;
+    optionD?: string;
+    questionDetails?: string;
+    questionId?: number;
   };
 }

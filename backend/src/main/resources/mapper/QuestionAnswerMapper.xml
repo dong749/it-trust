@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.backend.mapper.QuestionAnswerMapper">
+
+    <resultMap id="BaseResultMap" type="com.test.backend.model.entity.QuestionAnswer">
+            <id property="id" column="id" />
+            <result property="optionA" column="optionA" />
+            <result property="optionB" column="optionB" />
+            <result property="optionC" column="optionC" />
+            <result property="optionD" column="optionD" />
+            <result property="questionId" column="questionId" />
+            <result property="correctAnswer" column="correctAnswer" />
+            <result property="explanation" column="explanation" />
+            <result property="isDelete" column="isDelete" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,optionA,optionB,optionC,optionD,questionId,
+        correctAnswer,explanation,isDelete
+    </sql>
+</mapper>
