@@ -14,14 +14,12 @@ export default [
   {
     path: '/',
     name: 'welcome',
-    icon: 'smile',
     component: './Welcome',
   },
 
   {
     path: 'learning',
     name: 'Learning',
-    icon: 'book',
     routes: [
       {
         path: '',
@@ -75,7 +73,6 @@ export default [
   {
     path: 'quiz',
     name: 'Scenario Question',
-    icon: 'smile',
     routes: [
       {
         path: '',
