@@ -23,6 +23,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseUserQuizSubmitVO_ = {
+    code?: number;
+    data?: UserQuizSubmitVO;
+    message?: string;
+  };
+
   type BreachLogVO = {
     count?: number;
     isBreach?: number;
@@ -47,6 +53,11 @@ declare namespace API {
     title?: string;
   };
 
+  type judgeQuizUsingPOSTParams = {
+    /** userQuizSubmitDTO */
+    userQuizSubmitDTO: string;
+  };
+
   type QuestionBody = {
     id?: number;
     isDelete?: number;
@@ -62,5 +73,13 @@ declare namespace API {
     optionD?: string;
     questionDetails?: string;
     questionId?: number;
+    questionType?: number;
+  };
+
+  type UserQuizSubmitVO = {
+    explanation?: string;
+    id?: number;
+    isCorrect?: boolean;
+    rightAnswer?: string;
   };
 }

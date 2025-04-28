@@ -5,16 +5,15 @@ import com.test.backend.common.BaseResponse;
 import com.test.backend.common.ErrorCode;
 import com.test.backend.common.ResultUtils;
 import com.test.backend.exception.BusinessException;
+import com.test.backend.model.dto.UserQuizSubmitDTO;
 import com.test.backend.model.entity.QuestionAnswer;
 import com.test.backend.model.entity.QuestionBody;
 import com.test.backend.model.vo.QuestionVO;
+import com.test.backend.model.vo.UserQuizSubmitVO;
 import com.test.backend.service.QuestionAnswerService;
 import com.test.backend.service.QuestionBodyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -78,6 +77,7 @@ public class QuizController
             QuestionVO questionVO = new QuestionVO();
             questionVO.setQuestionId(questionId);
             questionVO.setQuestionDetails(questionBody.getQuestionDetails());
+            questionVO.setQuestionType(questionBody.getQuestionType());
             questionVO.setOptionA(questionAnswer.getOptionA());
             questionVO.setOptionB(questionAnswer.getOptionB());
             questionVO.setOptionC(questionAnswer.getOptionC());
@@ -85,5 +85,23 @@ public class QuizController
             questionVOList.add(questionVO);
         }
         return ResultUtils.success(questionVOList);
+    }
+
+    @PostMapping("/judge")
+    public BaseResponse<UserQuizSubmitVO> judgeQuiz(@RequestBody UserQuizSubmitDTO userQuizSubmitDTO)
+    {
+        if (userQuizSubmitDTO == null)
+        {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "User submission is null");
+        }
+        Long questionId = userQuizSubmitDTO.getQuestionId();
+        String userSelectedOption = userQuizSubmitDTO.getUserSelectedOption();
+        QuestionAnswer questionAnswer = questionAnswerService.getById(questionId);
+        String correctAnswer = questionAnswer.getCorrectAnswer();
+        UserQuizSubmitVO userQuizSubmitVO = new UserQuizSubmitVO();
+        userQuizSubmitVO.setIsCorrect(userSelectedOption.equalsIgnoreCase(correctAnswer));
+        userQuizSubmitVO.setExplanation(questionAnswer.getExplanation());
+        userQuizSubmitVO.setRightAnswer(correctAnswer);
+        return ResultUtils.success(userQuizSubmitVO);
     }
 }

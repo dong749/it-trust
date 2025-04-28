@@ -87,6 +87,12 @@ export default [
         component: './QuizStepPage',
         hideInMenu: true,
       },
+      {
+        path: 'result',
+        name: 'Quiz Result',
+        component: './QuizResultPage',
+        hideInMenu: true,
+      }
     ],
   },
 
