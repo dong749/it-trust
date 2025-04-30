@@ -14,7 +14,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: false,
   colorWeak: false,
-  title: 'Golden Guardians',
+  title: 'Safe Seniors',
   pwa: true,
   logo: '/lucent-password-protection-with-shield-and-padlock.svg',
   iconfontUrl: '',

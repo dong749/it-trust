@@ -1,7 +1,14 @@
 /* eslint-disable react/button-has-type */
 import React from 'react';
+import { useNavigate } from 'umi';
 
 const DangerousPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartQuiz = () => {
+    navigate('/quiz');
+  };
+
   return (
     <div style={{ padding: '40px 5vw', maxWidth: '1200px', margin: '0 auto' }}>
       {/* 顶部标题 + 图片 */}
@@ -68,7 +75,6 @@ const DangerousPage: React.FC = () => {
               marginBottom: '40px',
             }}
           >
-            {/* 卡片1 */}
             <div
               style={{
                 backgroundColor: '#1f2937',
@@ -96,7 +102,6 @@ const DangerousPage: React.FC = () => {
               </a>
             </div>
 
-            {/* 卡片2 */}
             <div
               style={{
                 backgroundColor: '#1f2937',
@@ -131,24 +136,19 @@ const DangerousPage: React.FC = () => {
             <h2 style={{ fontSize: '28px', color: '#fff' }}>Real-World Threats</h2>
             <ul style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.8, paddingLeft: '20px' }}>
               <li>
-                <strong>Identity Theft:</strong> Leaked personal information allows criminals to
-                impersonate you, open fake bank accounts, or apply for loans in your name.
+                <strong>Identity Theft:</strong> Criminals can impersonate you and open accounts.
               </li>
               <li>
-                <strong>Financial Fraud:</strong> Access to your card or banking data leads to
-                unauthorized transactions and monetary loss.
+                <strong>Financial Fraud:</strong> Stolen bank data leads to monetary loss.
               </li>
               <li>
-                <strong>Blackmail & Harassment:</strong> Exposed photos, messages, or medical info
-                may be used for extortion.
+                <strong>Blackmail:</strong> Sensitive data can be used for extortion.
               </li>
               <li>
-                <strong>Corporate Espionage:</strong> Sensitive business info in the wrong hands can
-                destroy reputation or competitive edge.
+                <strong>Corporate Espionage:</strong> Trade secrets may be leaked.
               </li>
               <li>
-                <strong>National Security Risks:</strong> Massive breaches like government employee
-                databases can endanger entire populations.
+                <strong>National Security Risks:</strong> Breaches can endanger entire nations.
               </li>
             </ul>
           </section>
@@ -172,8 +172,7 @@ const DangerousPage: React.FC = () => {
           <section>
             <h2 style={{ fontSize: '28px', color: '#fff' }}>Take Action Now</h2>
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-              Understanding the threats is just the beginning. Secure your digital life with strong
-              passwords, multi-factor authentication, encrypted storage, and regular privacy audits.
+              Secure your life with strong passwords, multi-factor authentication, and encrypted storage.
             </p>
           </section>
 
@@ -183,13 +182,12 @@ const DangerousPage: React.FC = () => {
             <h2 style={{ fontSize: '28px', color: '#fff' }}>Conclusion</h2>
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
               Data breaches are not abstract IT issues — they are deeply personal and dangerous.
-              Proactively managing your digital security helps protect your identity, your finances,
-              and your future.
+              Proactively managing your digital security helps protect your identity and future.
             </p>
           </section>
         </div>
 
-        {/* 提示卡片右侧固定显示 */}
+        {/* 右侧提示卡片 */}
         <div
           style={{
             flex: '0 0 300px',
@@ -211,10 +209,10 @@ const DangerousPage: React.FC = () => {
               ⚠️ Are You Prepared?
             </h3>
             <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
-              Test your knowledge about the dangers of data breaches and see how well protected you
-              are.
+              Test your knowledge about the dangers of data breaches and see how well protected you are.
             </p>
             <button
+              onClick={handleStartQuiz}
               style={{
                 padding: '10px 18px',
                 fontSize: '14px',

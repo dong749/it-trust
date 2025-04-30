@@ -86,7 +86,7 @@ const Welcome: React.FC = () => {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4A90E2')}
         onClick={() => navigate('/learning')}
       >
-        Get Started
+        Get Started for Protect Your Data
       </button>
 
       {/* 右下角 GIF */}

@@ -1,7 +1,14 @@
 /* eslint-disable react/button-has-type */
 import React from 'react';
+import { useNavigate } from 'umi';
 
 const MisinformationPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartQuiz = () => {
+    navigate('/quiz');
+  };
+
   return (
     <div style={{ padding: '40px 5vw', maxWidth: '1200px', margin: '0 auto' }}>
       {/* 顶部横幅区 */}
@@ -50,6 +57,7 @@ const MisinformationPage: React.FC = () => {
           Take a short quiz to test how well you can spot misinformation online.
         </p>
         <button
+          onClick={handleStartQuiz}
           style={{
             padding: '8px 16px',
             fontSize: '14px',
@@ -65,6 +73,7 @@ const MisinformationPage: React.FC = () => {
         </button>
       </div>
 
+      {/* 内容部分 */}
       <section>
         <h2 style={{ fontSize: '28px', color: '#fff', marginBottom: '16px' }}>
           What Is Misinformation?

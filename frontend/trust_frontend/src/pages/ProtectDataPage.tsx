@@ -1,7 +1,14 @@
 /* eslint-disable react/button-has-type */
 import React from 'react';
+import { useNavigate } from 'umi';
 
 const ProtectDataPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartQuiz = () => {
+    navigate('/quiz');
+  };
+
   return (
     <div style={{ padding: '40px 5vw', maxWidth: '1200px', margin: '0 auto' }}>
       {/* 顶部横幅区域 */}
@@ -112,6 +119,7 @@ const ProtectDataPage: React.FC = () => {
               Take our quick quiz to see how well you understand personal data protection.
             </p>
             <button
+              onClick={handleStartQuiz}
               style={{
                 padding: '10px 18px',
                 fontSize: '14px',

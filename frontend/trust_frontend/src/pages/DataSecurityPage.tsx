@@ -1,9 +1,17 @@
 /* eslint-disable react/button-has-type */
 import React from 'react';
+import { useNavigate } from 'umi';
 
 const DataSecurityPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartQuiz = () => {
+    navigate('/quiz');
+  };
+
   return (
     <div style={{ padding: '60px' }}>
+      {/* 顶部：图片 + 标题 */}
       <div
         style={{
           display: 'flex',
@@ -37,7 +45,9 @@ const DataSecurityPage: React.FC = () => {
           >
             What Is Data Security?
           </h1>
-          <h2>Understand how data security enables individual to protect information.</h2>
+          <h2 style={{ color: '#ccc' }}>
+            Understand how data security enables individuals to protect information.
+          </h2>
         </div>
       </div>
 
@@ -61,7 +71,12 @@ const DataSecurityPage: React.FC = () => {
             }}
           >
             <div
-              style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}
+              style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '8px',
+              }}
             >
               🔐 Data Security
             </div>
@@ -69,6 +84,7 @@ const DataSecurityPage: React.FC = () => {
               Start a Small Game Quiz to Check Your Understanding
             </p>
             <button
+              onClick={handleStartQuiz}
               style={{
                 padding: '10px 18px',
                 fontSize: '14px',
@@ -88,32 +104,25 @@ const DataSecurityPage: React.FC = () => {
         {/* 右侧文章正文 */}
         <div style={{ flex: 1, minWidth: '300px' }}>
           <h2 style={{ fontSize: '30px' }}>Introduce</h2>
-
           <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
             Personal data security refers to the process and ability to protect personal sensitive
             information from being leaked, abused, tampered with or illegally accessed through a
-            series of technical means, management measures and legal norms. Its core purpose is to
-            protect personal privacy, safeguard personal rights and interests, and avoid risks such
-            as identity theft, property loss and reputation damage.
+            series of technical means, management measures and legal norms...
           </p>
 
           <h2 style={{ fontSize: '30px' }}>The Core Goal of Personal Data Security</h2>
-
           <ol style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
             <li style={{ marginBottom: '10px' }}>
-              1. Confidentiality: Ensure that data is visible only to authorized users to prevent
-              information from being leaked or peeped.
+              1. Confidentiality: Ensure that data is visible only to authorized users.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              2. Integrity: Ensures that data cannot be tampered with or forged without
-              authorization.
+              2. Integrity: Ensure that data cannot be tampered with or forged.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              3. Availability: Ensure that data can be legally accessed and used when needed.
+              3. Availability: Ensure that data is accessible when needed.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              4. Control: Data subjects can control the use of their own data, such as viewing,
-              modifying or deleting permissions.
+              4. Control: Allow users to manage their own data access and rights.
             </li>
           </ol>
 
@@ -127,8 +136,8 @@ const DataSecurityPage: React.FC = () => {
             }}
           >
             <iframe
-              src="https://www.youtube.com/embed/N8xEgSe5RwE" // 👈 替换为你自己的视频链接 ID
-              title="Understanding Private Data"
+              src="https://www.youtube.com/embed/N8xEgSe5RwE"
+              title="Understanding Data Security"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               style={{
@@ -146,15 +155,11 @@ const DataSecurityPage: React.FC = () => {
             <h2 style={{ fontSize: '30px' }}>Defining Data Privacy and Data Security</h2>
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
               Data Privacy addresses the rights of individuals to control how and to what extent
-              information about them, their personal information, is collected and used within
-              organizations with whom they choose to interact.
+              information about them is used.
             </p>
-
-            <br />
-
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-              Data Security is about assuring the confidentiality, integrity, and availability of
-              information assets — in this case, personal information. 
+              Data Security is about ensuring the confidentiality, integrity, and availability of
+              that information.
             </p>
 
             <img
@@ -169,67 +174,55 @@ const DataSecurityPage: React.FC = () => {
               }}
             />
           </div>
-          <div>
-            <h2 style={{ fontSize: '24px', marginBottom: '16px', color: '#fff' }}>
-              Data Security in Our Life
-            </h2>
-            <ol style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-              <li style={{ marginBottom: '10px' }}>
-                1. Protecting Personal Information: When we enter our names, emails, phone numbers,
-                or payment details online, this data needs protection. Without proper security, it
-                could fall into the hands of hackers or be sold without consent.
-              </li>
-              <li style={{ marginBottom: '10px' }}>
-                2. Online Banking and Payments: Digital banking apps and mobile payments like Apple
-                Pay or Google Wallet rely on encryption and authentication to keep transactions
-                safe. A single data breach could result in major financial losses.
-              </li>
-              <li style={{ marginBottom: '10px' }}>
-                3. Health & Fitness Data: Apps that track your steps, sleep, or medical history deal
-                with sensitive personal data. If not secured properly, this information can be
-                misused by third parties or insurers.
-              </li>
-              <li style={{ marginBottom: '10px' }}>
-                4. Social Media Usage: Everything we post, like, or share builds a digital profile.
-                Proper privacy settings and platform data handling policies ensure this information
-                isn’t misused.
-              </li>
-            </ol>
 
-            <div
+          <h2 style={{ fontSize: '30px', marginTop: '40px' }}>Data Security in Our Life</h2>
+          <ol style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
+            <li style={{ marginBottom: '10px' }}>
+              1. Protecting personal details like emails and passwords from leaks and misuse.
+            </li>
+            <li style={{ marginBottom: '10px' }}>
+              2. Securing online banking and payment systems from cyber theft.
+            </li>
+            <li style={{ marginBottom: '10px' }}>
+              3. Ensuring fitness and health apps protect user privacy and data.
+            </li>
+            <li style={{ marginBottom: '10px' }}>
+              4. Managing digital footprint and social media privacy settings.
+            </li>
+          </ol>
+
+          <div
+            style={{
+              position: 'relative',
+              paddingBottom: '56.25%',
+              height: 0,
+              overflow: 'hidden',
+              borderRadius: '12px',
+              marginTop: '20px',
+            }}
+          >
+            <iframe
+              src="https://www.youtube.com/embed/se9i6b50jRI"
+              title="Data Security in Life"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
               style={{
-                position: 'relative',
-                paddingBottom: '56.25%',
-                height: 0,
-                overflow: 'hidden',
-                borderRadius: '12px',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: '0',
               }}
-            >
-              <iframe
-                src="https://www.youtube.com/embed/se9i6b50jRI" // 👈 替换为你自己的视频链接 ID
-                title="Understanding Private Data"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  border: '0',
-                }}
-              ></iframe>
-            </div>
-
-            <h2 style={{ fontSize: '30px' }}>Conclusion</h2>
-            <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-              Data security is no longer just an IT issue — it’s a personal responsibility and a
-              life skill. As we become more connected, the amount of personal data we generate will
-              only increase. Understanding how data security works and taking proactive steps to
-              protect ourselves ensures that we can safely enjoy the benefits of modern technology
-              without compromising our privacy, identity, or safety.
-            </p>
+            ></iframe>
           </div>
+
+          <h2 style={{ fontSize: '30px', marginTop: '40px' }}>Conclusion</h2>
+          <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
+            Data security is no longer just an IT concern — it's a critical life skill. With more
+            data being collected daily, it's essential to protect personal information through best
+            practices and awareness.
+          </p>
         </div>
       </div>
     </div>

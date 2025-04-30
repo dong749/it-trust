@@ -4,8 +4,6 @@ import { detectBreachUsingGet } from '../services/it-trust/detectDataBreachContr
 import { getBreachCountByGroupUsingGet } from '../services/it-trust/breachLogController';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const COLORS = ['#00C49F', '#FF8042'];
-
 const DetectPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -13,7 +11,6 @@ const DetectPage: React.FC = () => {
   const [breachCount, setBreachCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // 页面加载时请求饼图数据
   useEffect(() => {
     const fetchBreachStats = async () => {
       try {
@@ -33,10 +30,8 @@ const DetectPage: React.FC = () => {
     fetchBreachStats();
   }, []);
 
-  // 点击搜索按钮
   const handleSearch = async () => {
-    setErrorMsg(''); // 清除旧的错误信息
-
+    setErrorMsg('');
     if (!email) {
       setErrorMsg('Please enter an email address.');
       return;
@@ -91,7 +86,7 @@ const DetectPage: React.FC = () => {
         </h1>
       </div>
 
-      {/* 搜索框区域 */}
+      {/* 搜索框 */}
       <div
         style={{
           marginTop: '40px',
@@ -130,22 +125,14 @@ const DetectPage: React.FC = () => {
             fontSize: '16px',
             fontWeight: 'bold',
             cursor: 'pointer',
-            transition: 'transform 0.1s ease, background-color 0.2s',
           }}
-          onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-          onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1.0)')}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.0)')}
         >
           Search
         </button>
       </div>
 
-      {/* 错误提示信息区域 */}
-      {errorMsg && (
-        <div style={{ color: 'red', marginTop: '12px', fontWeight: 500 }}>
-          {errorMsg}
-        </div>
-      )}
+      {/* 错误信息 */}
+      {errorMsg && <div style={{ color: 'red', marginTop: '12px', fontWeight: 500 }}>{errorMsg}</div>}
 
       {/* 加载动画 */}
       {loading && (
@@ -163,16 +150,10 @@ const DetectPage: React.FC = () => {
         </div>
       )}
 
-      {/* Danger / Safe 提示区域 */}
+      {/* Danger / Safe 提示 */}
       {breachCount !== null && !loading && (
         <div style={{ marginTop: '40px', textAlign: 'center' }}>
-          <h2
-            style={{
-              color: breachCount > 0 ? 'red' : 'green',
-              fontWeight: 'bold',
-              fontSize: '32px',
-            }}
-          >
+          <h2 style={{ color: breachCount > 0 ? 'red' : 'green', fontWeight: 'bold', fontSize: '32px' }}>
             {breachCount > 0 ? 'Dangerous!!!' : "You're Safe 👍"}
           </h2>
 
@@ -186,10 +167,10 @@ const DetectPage: React.FC = () => {
               marginBottom: '40px',
             }}
           >
-            {[ 
+            {[
               'Use strong, unique passwords for each site',
               'Enable Two-Factor Authentication (2FA)',
-              'Avoid clicking suspicious links or attachments'
+              'Avoid clicking suspicious links or attachments',
             ].map((tip, index) => (
               <div
                 key={index}
@@ -212,27 +193,58 @@ const DetectPage: React.FC = () => {
         </div>
       )}
 
-      {/* 饼图区域 */}
-      <div style={{ marginTop: '20px', width: '100%', maxWidth: '600px', height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={breachStats}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-            >
-              {breachStats.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
+      {/* 饼图 + 危害说明区域 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px', marginTop: '40px' }}>
+        {/* 饼图区域靠左 */}
+        <div style={{ width: '100%', maxWidth: '500px', height: 300 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <defs>
+                <linearGradient id="redGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(255, 99, 132, 0.6)" />
+                  <stop offset="100%" stopColor="rgba(255, 99, 132, 0.3)" />
+                </linearGradient>
+                <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(59, 130, 246, 0.6)" />
+                  <stop offset="100%" stopColor="rgba(59, 130, 246, 0.3)" />
+                </linearGradient>
+              </defs>
+              <Pie
+                data={breachStats}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                innerRadius={40}
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                stroke="#222"
+                strokeWidth={1}
+              >
+                {breachStats.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.name === 'Breached' ? 'url(#redGradient)' : 'url(#blueGradient)'}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 危害说明区域 */}
+        <div style={{ maxWidth: '400px', color: '#ccc', fontSize: '16px', lineHeight: 1.7 }}>
+          <h3 style={{ color: '#fff', marginBottom: '12px' }}>Why a Breach Matters</h3>
+          <ul style={{ paddingLeft: '20px' }}>
+            <li>📧 Leaked emails can lead to account hacking.</li>
+            <li>💳 Identity theft and financial fraud are common results.</li>
+            <li>🕵️‍♂️ Your personal messages or history may be exposed.</li>
+            <li>📨 Spammers may target your inbox aggressively.</li>
+            <li>⚠️ Breaches often go undetected for months—act fast!</li>
+          </ul>
+        </div>
       </div>
 
       {/* 动画样式 */}
