@@ -5,8 +5,10 @@
 import * as breachLogController from './breachLogController';
 import * as detectDataBreachController from './detectDataBreachController';
 import * as quizController from './quizController';
+import * as dataVisualizationController from './dataVisualizationController';
 export default {
   breachLogController,
   detectDataBreachController,
   quizController,
+  dataVisualizationController,
 };

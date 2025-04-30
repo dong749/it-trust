@@ -42,6 +42,10 @@ public class QuizController
     @GetMapping("quizByType")
     public BaseResponse<List<QuestionVO>> getQuestionByType(@RequestParam String category)
     {
+        if (category == null)
+        {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Request Error");
+        }
         String quizCategory = RedisKeysConstant.QUIZ_CATEGORY + category;
         List<QuestionVO> questionVOList = (List<QuestionVO>) redisUtils.get(quizCategory);
         if (questionVOList != null && !questionVOList.isEmpty())

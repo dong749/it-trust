@@ -66,10 +66,6 @@ const QuizStepPage: React.FC = () => {
 
   const currentQuestion = questions[currentIndex];
 
-  if (!currentQuestion) {
-    return <div style={{ padding: 24 }}>⚠️ No current question available.</div>;
-  }
-
   const handleSubmitAnswer = async () => {
     if (!selectedOption) {
       alert('Please select an option first.');
@@ -106,8 +102,7 @@ const QuizStepPage: React.FC = () => {
   };
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh' }}>
-      
+    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', paddingBottom: 100 }}>
       {/* ✅ 水印背景 */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
         {[...Array(6)].map((_, index) => (
@@ -126,7 +121,7 @@ const QuizStepPage: React.FC = () => {
               animation: `${index % 2 === 0 ? 'scrollLeft' : 'scrollRight'} 40s linear infinite`,
             }}
           >
-            QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— 
+            QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— 
           </div>
         ))}
       </div>
@@ -135,7 +130,6 @@ const QuizStepPage: React.FC = () => {
       <div style={{ position: 'relative', zIndex: 1, padding: 24 }}>
         <h2>Q{currentIndex + 1}:</h2>
 
-        {/* ✅ 动态渲染题目，有切题滑动动画 */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.questionId}
@@ -172,7 +166,6 @@ const QuizStepPage: React.FC = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* 选项 */}
         <div>
           {(['A', 'B', 'C', 'D'] as const).map((opt) => {
             const key = (`option${opt}`) as 'optionA' | 'optionB' | 'optionC' | 'optionD';
@@ -192,34 +185,6 @@ const QuizStepPage: React.FC = () => {
           })}
         </div>
 
-        {/* 提交按钮 / 下一题按钮 */}
-        {!hasSubmitted ? (
-          <button
-            onClick={handleSubmitAnswer}
-            disabled={!selectedOption}
-            style={{
-              marginTop: 20,
-              padding: '8px 16px',
-              fontSize: 16,
-              cursor: selectedOption ? 'pointer' : 'not-allowed',
-            }}
-          >
-            Submit
-          </button>
-        ) : (
-          <button
-            onClick={handleNext}
-            style={{
-              marginTop: 20,
-              padding: '8px 16px',
-              fontSize: 16,
-            }}
-          >
-            {currentIndex === questions.length - 1 ? 'Finish' : 'Next'}
-          </button>
-        )}
-
-        {/* 判题结果显示 */}
         {judgeResult && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -237,12 +202,54 @@ const QuizStepPage: React.FC = () => {
                 ? '✅ You are correct!'
                 : `❌ You are incorrect. The correct answer is ${judgeResult.rightAnswer}`}
             </h3>
-            <p style={{ marginTop: 8 }}>{judgeResult.explanation}</p>
+            <p style={{ marginTop: 8, color: 'black'}}>{judgeResult.explanation}</p>
           </motion.div>
         )}
       </div>
 
-      {/* ✅ 背景滚动动画 */}
+      {/* ✅ 底部固定按钮 */}
+      <div style={{ position: 'fixed', bottom: 32, left: 0, right: 0, textAlign: 'center', zIndex: 10 }}>
+        {!hasSubmitted ? (
+          <button
+            onClick={handleSubmitAnswer}
+            disabled={!selectedOption}
+            style={{
+              backgroundColor: selectedOption ? '#1890ff' : '#a0c4e8',
+              color: '#fff',
+              padding: '12px 32px',
+              fontSize: 18,
+              fontWeight: 'bold',
+              border: 'none',
+              borderRadius: 6,
+              cursor: selectedOption ? 'pointer' : 'not-allowed',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            Submit
+          </button>
+        ) : (
+          <button
+            onClick={handleNext}
+            style={{
+              backgroundColor: '#1890ff',
+              color: '#fff',
+              padding: '12px 32px',
+              fontSize: 18,
+              fontWeight: 'bold',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            {currentIndex === questions.length - 1 ? 'Finish' : 'Next'}
+          </button>
+        )}
+      </div>
+
+      {/* 背景滚动动画 keyframes */}
       <style>
         {`
           @keyframes scrollLeft {

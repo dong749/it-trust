@@ -94,6 +94,12 @@ export default [
   },
 
   {
+    path: 'statistics',
+    name: 'Statistics',
+    component: './DataStatisticsPage',
+  },
+
+  {
     path: '*',
     layout: false,
     component: './404',

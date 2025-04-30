@@ -1,4 +1,10 @@
 declare namespace API {
+  type BaseResponseDataLeakedByStateResponseVO_ = {
+    code?: number;
+    data?: DataLeakedByStateResponseVO;
+    message?: string;
+  };
+
   type BaseResponseListBreachLogVO_ = {
     code?: number;
     data?: BreachLogVO[];
@@ -8,12 +14,6 @@ declare namespace API {
   type BaseResponseListHIBPBreachDTO_ = {
     code?: number;
     data?: HIBPBreachDTO[];
-    message?: string;
-  };
-
-  type BaseResponseListQuestionBody_ = {
-    code?: number;
-    data?: QuestionBody[];
     message?: string;
   };
 
@@ -32,6 +32,30 @@ declare namespace API {
   type BreachLogVO = {
     count?: number;
     isBreach?: number;
+  };
+
+  type DataLeakedByStateDTO = {
+    leakType?: string;
+    state?: string;
+  };
+
+  type DataLeakedByStateResponseVO = {
+    dataLeakedByStateStatistics?: DataLeakedByStateStatisticsVO;
+    dataLeakedByStates?: DataLeakedByStateVO[];
+  };
+
+  type DataLeakedByStateStatisticsVO = {
+    average?: number;
+    max?: number;
+    min?: number;
+    sum?: number;
+  };
+
+  type DataLeakedByStateVO = {
+    leaktype?: string;
+    reports?: number;
+    state?: string;
+    year?: string;
   };
 
   type detectBreachUsingGETParams = {
@@ -53,19 +77,6 @@ declare namespace API {
     title?: string;
   };
 
-  type judgeQuizUsingPOSTParams = {
-    /** userQuizSubmitDTO */
-    userQuizSubmitDTO: string;
-  };
-
-  type QuestionBody = {
-    id?: number;
-    isDelete?: number;
-    questionCategory?: string;
-    questionDetails?: string;
-    questionType?: number;
-  };
-
   type QuestionVO = {
     optionA?: string;
     optionB?: string;
@@ -74,6 +85,12 @@ declare namespace API {
     questionDetails?: string;
     questionId?: number;
     questionType?: number;
+  };
+
+  type UserQuizSubmitDTO = {
+    id?: number;
+    questionId?: number;
+    userSelectedOption?: string;
   };
 
   type UserQuizSubmitVO = {

@@ -1,7 +1,14 @@
 /* eslint-disable react/button-has-type */
 import React from 'react';
+import { useNavigate } from 'umi';
 
 const PrivateDataPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartQuiz = () => {
+    navigate('/quiz'); // 正确跳转到 QuizPage
+  };
+
   return (
     <div style={{ padding: '60px' }}>
       {/* 顶部：图片 + 标题 */}
@@ -69,6 +76,7 @@ const PrivateDataPage: React.FC = () => {
               Start a Small Game Quiz to Check Your Understanding
             </p>
             <button
+              onClick={handleStartQuiz}
               style={{
                 padding: '10px 18px',
                 fontSize: '14px',
@@ -101,7 +109,7 @@ const PrivateDataPage: React.FC = () => {
             }}
           >
             <span style={{ fontSize: '24px', marginRight: '12px' }}>❝</span>
-            Want to understand What difference between private data and public data?
+            Want to understand what difference between private data and public data?
             <a
               href="https://www.companysights.com/resources/private-data-vs-public-data-how-to-calibrate-the-difference"
               target="_blank"
@@ -117,31 +125,24 @@ const PrivateDataPage: React.FC = () => {
           </div>
 
           <h2 style={{ fontSize: '30px' }}>Introduce</h2>
-
           <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
             The term ‘personal information’ encompasses a broad range of information.
           </p>
           <br />
           <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-            A number of different types of information are explicitly recognised as constituting
-            personal information under the Privacy Act . For example, the following are all types of
-            personal information:
+            A number of different types of information are explicitly recognised as constituting personal information under the Privacy Act.
           </p>
 
           <ol style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
             <li style={{ marginBottom: '10px' }}>
-              1. sensitive information (includes information or opinion about an individual’s racial
-              or ethnic origin, political opinion, religious beliefs, sexual orientation or criminal
-              record, provided the information or opinion otherwise meets the definition of personal
-              information)
+              1. Sensitive information (racial/ethnic origin, political opinion, religious beliefs, sexual orientation, etc.)
             </li>
             <li style={{ marginBottom: '10px' }}>
-              2. health information (which is also sensitive information)
+              2. Health information (also considered sensitive)
             </li>
-            <li style={{ marginBottom: '10px' }}>3. credit information</li>
+            <li style={{ marginBottom: '10px' }}>3. Credit information</li>
             <li style={{ marginBottom: '10px' }}>
-              4. employee record information (subject to exemptions), and tax file number
-              information.
+              4. Employee record information, and tax file number information.
             </li>
           </ol>
 
@@ -159,7 +160,7 @@ const PrivateDataPage: React.FC = () => {
               }}
             >
               <iframe
-                src="https://www.youtube.com/embed/MjPpG2e71Ec" // 👈 替换为你自己的视频链接 ID
+                src="https://www.youtube.com/embed/MjPpG2e71Ec"
                 title="Understanding Private Data"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -174,15 +175,11 @@ const PrivateDataPage: React.FC = () => {
               ></iframe>
             </div>
           </div>
+
           <div>
             <h2 style={{ fontSize: '24px', marginBottom: '16px', color: '#fff' }}>Conclusion</h2>
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
-              Personal data is any information that identifies an individual, making it a vital
-              aspect of privacy and security in today's digital world. As technology advances and
-              data collection becomes more widespread, protecting personal data has become
-              increasingly important. Organizations must handle it responsibly, and individuals
-              should be aware of their rights. Strong data protection not only builds trust but also
-              helps prevent misuse, fraud, and privacy violations.
+              Personal data is any information that identifies an individual, making it a vital aspect of privacy and security in today's digital world. As technology advances and data collection becomes more widespread, protecting personal data has become increasingly important.
             </p>
           </div>
         </div>
