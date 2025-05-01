@@ -39,6 +39,7 @@ public class DataVisualizationController
     public BaseResponse<DataLeakedByStateResponseVO> searchDataWithDataLeaked(@RequestBody DataLeakedByStateDTO
                                                                                         dataLeakedByStateDTO)
     {
+        // parameter validation
         if (dataLeakedByStateDTO == null)
         {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Request Error");
@@ -49,15 +50,18 @@ public class DataVisualizationController
         {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Request Error");
         }
+        // build queryWrapper for data search in database
         QueryWrapper<DataLeakedByState> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("state", state);
         queryWrapper.eq("leakType", leakType);
+        // search data
         List<DataLeakedByState> dataLeakedByStateList = dataLeakedByStateService.list(queryWrapper);
         if (dataLeakedByStateList == null || dataLeakedByStateList.isEmpty())
         {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Data Leaked By State Not Found");
         }
         List<DataLeakedByStateVO> dataLeakedByStateVOList = new ArrayList<>();
+        // build VO object and add to list
         for (DataLeakedByState dataLeakedByState : dataLeakedByStateList)
         {
             DataLeakedByStateVO vo = new DataLeakedByStateVO();
@@ -68,10 +72,12 @@ public class DataVisualizationController
             dataLeakedByStateVOList.add(vo);
         }
         DataLeakedByStateStatisticsVO dataLeakedByStateStatisticsVO = new DataLeakedByStateStatisticsVO();
+        // calculate the sum of the reports for every state
         List<Integer> reports = dataLeakedByStateVOList.stream()
                 .map(DataLeakedByStateVO::getReports)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+        // calculate max, min and sum value
         int max = reports.stream().max(Integer::compareTo).orElse(0);
         int min = reports.stream().min(Integer::compareTo).orElse(0);
         int sum = reports.stream().mapToInt(Integer::intValue).sum();
@@ -94,19 +100,19 @@ public class DataVisualizationController
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Request Error");
         }
 
-        // 查询指定年份的数据
+        // build LambdaQueryWrapper for search data
         LambdaQueryWrapper<DataLeakTypeReport> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DataLeakTypeReport::getYear, year);
         List<DataLeakTypeReport> reportList = dataLeakTypeReportService.list(queryWrapper);
 
-        // 总报告数
+        // report sum
         int sum = reportList.stream().mapToInt(DataLeakTypeReport::getReportscount).sum();
         if (sum == 0)
         {
             return ResultUtils.success(new ArrayList<>());
         }
 
-        // 封装结果
+        // build VO object list
         List<DataLeakByTypeReportVO> resultList = new ArrayList<>();
         for (DataLeakTypeReport item : reportList)
         {
@@ -114,9 +120,9 @@ public class DataVisualizationController
             vo.setType(item.getType());
             vo.setCount(item.getReportscount());
 
-            // 计算百分比并保留两位小数
+            // calculate result
             double percent = (item.getReportscount() * 100.0) / sum;
-            vo.setPercentage(Math.round(percent * 100.0) / 100.0); // 保留两位小数
+            vo.setPercentage(Math.round(percent * 100.0) / 100.0);
 
             resultList.add(vo);
         }

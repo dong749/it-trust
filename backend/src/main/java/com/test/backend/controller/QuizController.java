@@ -46,24 +46,31 @@ public class QuizController
         {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Request Error");
         }
+        // build redis key for search data from redis
         String quizCategory = RedisKeysConstant.QUIZ_CATEGORY + category;
+        // search data from redis
         List<QuestionVO> questionVOList = (List<QuestionVO>) redisUtils.get(quizCategory);
+        // if data are exited in redis, return date to frontend directly
         if (questionVOList != null && !questionVOList.isEmpty())
         {
             return ResultUtils.success(questionVOList);
         }
+        // if data are not in redis, build LambdaQueryWrapper for search data from database
         LambdaQueryWrapper<QuestionBody> questionBodyLambdaQueryWrapper = new LambdaQueryWrapper<>();
         questionBodyLambdaQueryWrapper.eq(QuestionBody::getQuestionCategory, category)
                 .eq(QuestionBody::getIsDelete, 0);
+        // search data from database
         List<QuestionBody> questionBodyList = questionBodyService.list(questionBodyLambdaQueryWrapper);
         if (questionBodyList.isEmpty())
         {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Quiz is not found");
         }
+        // get questionId list
         List<Long> questionIdList = questionBodyList.stream()
                 .map(QuestionBody::getId)
                 .collect(Collectors.toList());
         LambdaQueryWrapper<QuestionAnswer> questionAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // according questionId list search question answers
         questionAnswerLambdaQueryWrapper.in(QuestionAnswer::getQuestionId, questionIdList)
                 .eq(QuestionAnswer::getIsDelete, 0);
         List<QuestionAnswer> questionAnswerList = questionAnswerService.list(questionAnswerLambdaQueryWrapper);
@@ -71,6 +78,7 @@ public class QuizController
         {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Quiz answer is not Found");
         }
+        // build VO object for return to the frontend
         Map<Long, QuestionAnswer> questionAnswerMap = questionAnswerList.stream()
                 .collect(Collectors.toMap(QuestionAnswer::getQuestionId, a -> a));
         questionVOList = new ArrayList<>();
@@ -91,10 +99,16 @@ public class QuizController
                 questionVOList.add(questionVO);
             }
         }
+        // save data into redis, next time will get data from redis
         redisUtils.set(quizCategory, questionVOList, 36000);
         return ResultUtils.success(questionVOList);
     }
 
+    /**
+     * Judge the quiz answer the user submitted
+     * @param userQuizSubmitDTO
+     * @return
+     */
     @PostMapping("/judge")
     public BaseResponse<UserQuizSubmitVO> judgeQuiz(@RequestBody UserQuizSubmitDTO userQuizSubmitDTO)
     {
