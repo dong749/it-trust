@@ -6,9 +6,17 @@ import { getPrivacyBreachDistributionUsingGet } from '../services/it-trust/dataV
 Chart.register(...registerables);
 const { Option } = Select;
 
+const COLORS = [
+  '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316',
+  '#6366f1', '#22c55e',
+];
+
 const PrivacyBreachPage: React.FC = () => {
   const [year, setYear] = useState<number>(2022);
   const [loading, setLoading] = useState(false);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [values, setValues] = useState<number[]>([]);
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
 
@@ -18,10 +26,11 @@ const PrivacyBreachPage: React.FC = () => {
       const res = await getPrivacyBreachDistributionUsingGet({ year: selectedYear });
       if (res?.data) {
         const filteredData = res.data.filter((item: any) => item.type && item.count != null);
-        const labels = filteredData.map((item: any) => item.type);
-        const values = filteredData.map((item: any) => item.count);
-
-        renderChart(labels, values);
+        const newLabels = filteredData.map((item: any) => item.type);
+        const newValues = filteredData.map((item: any) => item.count);
+        setLabels(newLabels);
+        setValues(newValues);
+        renderChart(newLabels, newValues);
       }
     } catch (err) {
       console.error('图表数据获取失败:', err);
@@ -46,11 +55,7 @@ const PrivacyBreachPage: React.FC = () => {
           {
             label: 'Report Count',
             data: values,
-            backgroundColor: [
-              '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
-              '#8b5cf6', '#ec4899', '#14b8a6', '#f97316',
-              '#6366f1', '#22c55e',
-            ],
+            backgroundColor: COLORS,
             borderColor: '#0f172a',
             borderWidth: 2,
           },
@@ -58,12 +63,7 @@ const PrivacyBreachPage: React.FC = () => {
       },
       options: {
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              color: '#fff',
-            },
-          },
+          legend: { display: false }, // 自定义图例，不用默认的
           tooltip: {
             callbacks: {
               label: (context) => {
@@ -97,8 +97,28 @@ const PrivacyBreachPage: React.FC = () => {
       </div>
 
       <Spin spinning={loading}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <canvas ref={chartRef} />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 40 }}>
+          {/* 左边图表 */}
+          <div style={{ width: 400 }}>
+            <canvas ref={chartRef} />
+          </div>
+
+          {/* 右边图例 */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {labels.map((label, index) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 4,
+                    backgroundColor: COLORS[index % COLORS.length],
+                  }}
+                />
+                <span style={{ fontSize: 14 }}>{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </Spin>
     </div>
