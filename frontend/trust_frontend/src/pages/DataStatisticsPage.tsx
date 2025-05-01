@@ -242,7 +242,7 @@ const DataStatisticsPage: React.FC = () => {
       `}</style>
 
       <div className="page-title">
-        <img src="DV.svg" alt="Leak Icon" />
+        <img src="/DV.svg" alt="Leak Icon" />
         <span>Data Leak Visualization</span>
       </div>
 

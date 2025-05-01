@@ -20,26 +20,45 @@ const Welcome: React.FC = () => {
         justifyContent: 'center',
       }}
     >
-      {/* 左上角 GIF */}
-      <img
-        src="/techny-email-marketing-and-newsletter-with-new-message.gif"
-        alt="Homepage Animation"
+      {/* 顶部两张图（左上角和右上角） */}
+      <div
         style={{
           position: 'absolute',
           top: '2%',
-          left: '2%',
-          width: '25vw',
-          maxWidth: '280px',
-          transform: 'rotate(-15deg)',
-          borderRadius: '8px',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'space-between',
+          padding: '0 2%',
           zIndex: 1000,
         }}
-      />
+      >
+        <img
+          src="/techny-email-marketing-and-newsletter-with-new-message.gif"
+          alt="Left Animation"
+          style={{
+            width: '25vw',
+            maxWidth: '280px',
+            transform: 'rotate(-15deg)',
+            borderRadius: '8px',
+          }}
+        />
+        <img
+          src="/old-man-listening-songs-on-a-phone.svg"
+          alt="Right Animation"
+          style={{
+            width: '25vw',
+            maxWidth: '280px',
+            transform: 'rotate(10deg)',
+            borderRadius: '8px',
+          }}
+        />
+      </div>
 
       {/* 主要标题 */}
       <h1
         style={{
-          fontSize: '5vw', // 缩小一点
+          fontSize: '5vw',
           maxWidth: '90%',
           textAlign: 'center',
           fontWeight: 'bold',
@@ -56,7 +75,7 @@ const Welcome: React.FC = () => {
       {/* 副标题 */}
       <h3
         style={{
-          fontSize: '2.2vw', // 缩小一点
+          fontSize: '2.2vw',
           maxWidth: '90%',
           textAlign: 'center',
           fontWeight: 'bold',
@@ -72,7 +91,7 @@ const Welcome: React.FC = () => {
         style={{
           marginTop: '6vh',
           padding: '12px 24px',
-          fontSize: '1.6vw', // 缩小字号
+          fontSize: '1.6vw',
           fontWeight: 'bold',
           color: '#fff',
           backgroundColor: '#4A90E2',
@@ -86,7 +105,7 @@ const Welcome: React.FC = () => {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4A90E2')}
         onClick={() => navigate('/learning')}
       >
-        Get Started for Protect Your Data
+        Protect Your Data
       </button>
 
       {/* 右下角 GIF */}

@@ -11,6 +11,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListDataLeakByTypeReportVO_ = {
+    code?: number;
+    data?: DataLeakByTypeReportVO[];
+    message?: string;
+  };
+
   type BaseResponseListHIBPBreachDTO_ = {
     code?: number;
     data?: HIBPBreachDTO[];
@@ -32,6 +38,12 @@ declare namespace API {
   type BreachLogVO = {
     count?: number;
     isBreach?: number;
+  };
+
+  type DataLeakByTypeReportVO = {
+    count?: number;
+    percentage?: number;
+    type?: string;
   };
 
   type DataLeakedByStateDTO = {
@@ -61,6 +73,11 @@ declare namespace API {
   type detectBreachUsingGETParams = {
     /** email */
     email: string;
+  };
+
+  type getPrivacyBreachDistributionUsingGETParams = {
+    /** year */
+    year: number;
   };
 
   type getQuestionByTypeUsingGETParams = {

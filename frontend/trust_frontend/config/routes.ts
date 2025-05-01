@@ -93,15 +93,38 @@ export default [
     ],
   },
 
-  {
-    path: 'statistics',
-    name: 'Statistics',
-    component: './DataStatisticsPage',
-  },
+  // {
+  //   path: 'statistics',
+  //   name: 'Statistics',
+  //   component: './DataStatisticsPage',
+  // },
 
   {
     path: '*',
     layout: false,
     component: './404',
   },
+
+  {
+    path: 'visualization',
+    name: 'visualization',
+    routes: [
+      {
+        path: '',
+        component: './DataVisualizationPage',
+      },
+      {
+        path: 'statistics',
+        name: 'Statistics',
+        component: './DataStatisticsPage',
+        hideInMenu: true,
+      },
+      {
+        path: 'privacy',
+        name: 'Privacy',
+        component: './PrivacyBreachPage',
+        hideInMenu: true,
+      }
+    ]
+  }
 ];

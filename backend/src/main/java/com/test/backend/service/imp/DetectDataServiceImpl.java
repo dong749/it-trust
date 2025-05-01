@@ -40,6 +40,7 @@ public class DetectDataServiceImpl extends ServiceImpl<HIBPBreachMapper, HIBPBre
     @Resource
     private MailBoxConfig mailBoxConfig;
 
+
     @Override
     public List<HIBPBreachDTO> detect(String email)
     {
