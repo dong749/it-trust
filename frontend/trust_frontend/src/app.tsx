@@ -85,8 +85,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * 请求配置
  */
 export const request = {
-  baseURL: 'https://it-trust.tech',
-  // baseURL: 'http://localhost:8101',
+  // baseURL: 'https://it-trust.tech',
+  baseURL: 'http://localhost:8101',
   withCredentials: true,
   ...errorConfig,
 };
