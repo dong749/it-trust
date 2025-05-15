@@ -9,6 +9,7 @@ import com.test.backend.common.ResultUtils;
 import com.test.backend.constant.CommonConstant;
 import com.test.backend.constant.RedisKeysConstant;
 import com.test.backend.exception.BusinessException;
+import com.test.backend.manager.RedissonLimiterManager;
 import com.test.backend.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,9 @@ public class AIChatAndDetectController
     @Resource
     private RedisUtils redisUtils;
 
+    @Resource
+    private RedissonLimiterManager redissonLimiterManager;
+
 
     @GetMapping("/chatbot")
     public BaseResponse<String> chatBotResponse(@RequestParam String userInput
@@ -52,6 +56,9 @@ public class AIChatAndDetectController
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
         }
+
+        // Limit user access
+        redissonLimiterManager.limitation("chatRate_" + conversationId);
 
         // Get chat history with certain conversation id from redis
         String chatConversationId = RedisKeysConstant.CHAT_CONVERSATION + conversationId;

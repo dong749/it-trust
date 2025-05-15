@@ -15,7 +15,6 @@ import com.test.backend.model.dto.UserQuizSubmitDTO;
 import com.test.backend.model.entity.QuestionAnswer;
 import com.test.backend.model.entity.QuestionBody;
 import com.test.backend.model.vo.QuestionVO;
-import com.test.backend.model.vo.QuizResultDetailsVO;
 import com.test.backend.model.vo.UserQuizSubmitVO;
 import com.test.backend.service.QuestionAnswerService;
 import com.test.backend.service.QuestionBodyService;
