@@ -29,6 +29,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseString_ = {
+    code?: number;
+    data?: string;
+    message?: string;
+  };
+
   type BaseResponseUserQuizSubmitVO_ = {
     code?: number;
     data?: UserQuizSubmitVO;
@@ -38,6 +44,11 @@ declare namespace API {
   type BreachLogVO = {
     count?: number;
     isBreach?: number;
+  };
+
+  type chatBotResponseUsingGETParams = {
+    /** userInput */
+    userInput: string;
   };
 
   type DataLeakByTypeReportVO = {
@@ -104,8 +115,11 @@ declare namespace API {
     questionType?: number;
   };
 
+  type UserQuizBatchSubmitDTO = {
+    quizList?: UserQuizSubmitDTO[];
+  };
+
   type UserQuizSubmitDTO = {
-    id?: number;
     questionId?: number;
     userSelectedOption?: string;
   };

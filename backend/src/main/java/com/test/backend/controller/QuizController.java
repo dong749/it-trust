@@ -1,21 +1,28 @@
 package com.test.backend.controller;
 
+import com.azure.ai.openai.OpenAIClient;
+import com.azure.ai.openai.models.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.test.backend.common.BaseResponse;
 import com.test.backend.common.ErrorCode;
 import com.test.backend.common.ResultUtils;
+import com.test.backend.constant.CommonConstant;
 import com.test.backend.constant.RedisKeysConstant;
 import com.test.backend.exception.BusinessException;
+import com.test.backend.model.dto.UserQuizBatchSubmitDTO;
 import com.test.backend.model.dto.UserQuizSubmitDTO;
 import com.test.backend.model.entity.QuestionAnswer;
 import com.test.backend.model.entity.QuestionBody;
 import com.test.backend.model.vo.QuestionVO;
+import com.test.backend.model.vo.QuizResultDetailsVO;
 import com.test.backend.model.vo.UserQuizSubmitVO;
 import com.test.backend.service.QuestionAnswerService;
 import com.test.backend.service.QuestionBodyService;
 import com.test.backend.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -37,6 +44,9 @@ public class QuizController
 
     @Resource
     private RedisUtils redisUtils;
+
+    @Resource
+    private OpenAIClient openAIClient;
 
 
     @GetMapping("quizByType")
@@ -138,5 +148,58 @@ public class QuizController
         userQuizSubmitVO.setRightAnswer(correctAnswer);
 
         return ResultUtils.success(userQuizSubmitVO);
+    }
+
+    @PostMapping("/feedback")
+    public BaseResponse<String> getAiResponse(@RequestBody UserQuizBatchSubmitDTO userQuizBatchSubmitDTO)
+    {
+        if (ObjectUtils.isEmpty(userQuizBatchSubmitDTO) || CollectionUtils.isEmpty(userQuizBatchSubmitDTO.getQuizList()))
+        {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Invalid quiz data");
+        }
+        StringBuilder aiAnalysis = new StringBuilder();
+        for (UserQuizSubmitDTO userQuizSubmitDTO : userQuizBatchSubmitDTO.getQuizList())
+        {
+            Long questionId = userQuizSubmitDTO.getQuestionId();
+            String userSelectedOption = userQuizSubmitDTO.getUserSelectedOption();
+
+            QuestionBody questionBody = questionBodyService.getById(questionId);
+            if (ObjectUtils.isEmpty(questionBody))
+            {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Question body not found");
+            }
+            QuestionAnswer questionAnswer = questionAnswerService.getOne(new QueryWrapper<QuestionAnswer>()
+                    .eq("questionId", questionId));
+            String optionA = questionAnswer.getOptionA();
+            String optionB = questionAnswer.getOptionB();
+            String optionC = questionAnswer.getOptionC();
+            String optionD = questionAnswer.getOptionD();
+
+            aiAnalysis.append("Question: ").append(questionBody.getQuestionDetails()).append("\n")
+                    .append("Options: ").append("\n")
+                    .append("A.").append(optionA).append("\n")
+                    .append("B.").append(optionB).append("\n")
+                    .append("C.").append(optionC).append("\n")
+                    .append("D.").append(optionD).append("\n")
+                    .append("User selectedOption: ").append(userSelectedOption)
+                    .append("Right Answer: ").append(questionAnswer.getCorrectAnswer())
+                    .append("\n\n");
+        }
+
+        List<ChatRequestMessage> chatRequestMessageList = new ArrayList<>();
+        ChatRequestMessage chatRequestSystemMessage = new ChatRequestSystemMessage(CommonConstant.QUIZ_FEED_BACK_PROMPT);
+        ChatRequestMessage chatRequestUserMessage = new ChatRequestUserMessage(aiAnalysis.toString());
+        chatRequestMessageList.add(chatRequestSystemMessage);
+        chatRequestMessageList.add(chatRequestUserMessage);
+        ChatCompletionsOptions chatCompletionsOptions = new ChatCompletionsOptions(chatRequestMessageList);
+        chatCompletionsOptions.setMaxTokens(4096);
+        chatCompletionsOptions.setTemperature(1d);
+        chatCompletionsOptions.setTopP(1d);
+
+        ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2"
+                , chatCompletionsOptions);
+        List<ChatChoice> choices = chatCompletions.getChoices();
+        String reply = choices.get(0).getMessage().getContent();
+        return ResultUtils.success(reply);
     }
 }

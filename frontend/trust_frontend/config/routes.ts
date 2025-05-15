@@ -13,7 +13,7 @@
 export default [
   {
     path: '/',
-    name: 'welcome',
+    name: 'Welcome',
     component: './Welcome',
   },
 
@@ -107,7 +107,7 @@ export default [
 
   {
     path: 'visualization',
-    name: 'visualization',
+    name: 'Visualization',
     routes: [
       {
         path: '',

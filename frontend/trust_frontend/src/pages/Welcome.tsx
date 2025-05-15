@@ -1,9 +1,40 @@
 /* eslint-disable react/button-has-type */
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { chatBotResponseUsingGet } from '../services/it-trust/aiChatAndDetectController'; // 替换为你的 API 文件路径
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
+  const [showChat, setShowChat] = useState(false);
+  const [userInput, setUserInput] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ from: 'user' | 'bot'; text: string }[]>([
+    { from: 'bot', text: '👋 Hi! How can I help you with data security?' },
+  ]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!userInput.trim()) return;
+
+    const input = userInput.trim();
+    const userMessage = { from: 'user' as const, text: input };
+    setChatHistory((prev) => [...prev, userMessage]);
+    setUserInput('');
+    setLoading(true);
+
+    try {
+      const res = await chatBotResponseUsingGet({ userInput: input }, input);
+      const botReply = res?.data || '🤖 Sorry, I did not understand that.';
+      setChatHistory((prev) => [...prev, { from: 'bot', text: botReply }]);
+    } catch (err) {
+      console.error('Chatbot error:', err);
+      setChatHistory((prev) => [
+        ...prev,
+        { from: 'bot', text: '❌ Failed to get response from AI.' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
@@ -20,7 +51,7 @@ const Welcome: React.FC = () => {
         justifyContent: 'center',
       }}
     >
-      {/* 顶部两张图（左上角和右上角） */}
+      {/* 顶部图 */}
       <div
         style={{
           position: 'absolute',
@@ -55,7 +86,7 @@ const Welcome: React.FC = () => {
         />
       </div>
 
-      {/* 主要标题 */}
+      {/* 主标题 */}
       <h1
         style={{
           fontSize: '5vw',
@@ -69,10 +100,9 @@ const Welcome: React.FC = () => {
           margin: '0 0 20px 0',
         }}
       >
-        Golden Guardians
+        Safe Seniors
       </h1>
 
-      {/* 副标题 */}
       <h3
         style={{
           fontSize: '2.2vw',
@@ -105,10 +135,10 @@ const Welcome: React.FC = () => {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4A90E2')}
         onClick={() => navigate('/learning')}
       >
-        Protect Your Data
+        Lets Protect Your Data
       </button>
 
-      {/* 右下角 GIF */}
+      {/* 右下角图 */}
       <img
         src="/techny-kanban-planning-board-on-tablet.gif"
         alt="Homepage Animation"
@@ -123,6 +153,122 @@ const Welcome: React.FC = () => {
           zIndex: 1000,
         }}
       />
+
+      {/* 左下角聊天图标 */}
+      <img
+        src="/chatbot.gif"
+        alt="Chatbot Icon"
+        style={{
+          position: 'absolute',
+          bottom: '2%',
+          left: '2%',
+          width: '80px',
+          height: '80px',
+          cursor: 'pointer',
+          zIndex: 1000,
+        }}
+        onClick={() => setShowChat(!showChat)}
+      />
+
+      {/* 聊天框 */}
+      {showChat && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '90px',
+            left: '2%',
+            width: '700px',
+            height: '400px',
+            backgroundColor: '#fff',
+            border: '2px solid #4A90E2',
+            borderRadius: '8px',
+            padding: '10px',
+            zIndex: 1001,
+            boxShadow: '0 0 12px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#4A90E2' }}>
+            Chatbot Assistant
+          </div>
+
+          <div
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              marginBottom: '8px',
+              border: '1px solid #eee',
+              padding: '5px',
+              borderRadius: '4px',
+              fontSize: '14px',
+            }}
+          >
+            {chatHistory.map((msg, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  justifyContent: msg.from === 'user' ? 'flex-end' : 'flex-start',
+                  marginBottom: '8px',
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#f1f1f1',
+                    padding: '8px 12px',
+                    borderRadius: '12px',
+                    maxWidth: '75%',
+                    color: '#000',
+                    fontSize: '14px',
+                    lineHeight: '1.4',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  <b>{msg.from === 'user' ? 'You' : 'Bot'}:</b> {msg.text}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div style={{ fontStyle: 'italic', color: '#888' }}>Bot is typing...</div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex' }}>
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSend();
+              }}
+              placeholder="Type your message..."
+              style={{
+                flex: 1,
+                padding: '6px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                fontSize: '14px',
+                marginRight: '5px',
+              }}
+            />
+            <button
+              onClick={handleSend}
+              disabled={loading}
+              style={{
+                padding: '6px 12px',
+                backgroundColor: '#4A90E2',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

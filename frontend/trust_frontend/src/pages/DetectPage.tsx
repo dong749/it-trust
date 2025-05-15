@@ -17,7 +17,7 @@ const DetectPage: React.FC = () => {
         const res = await getBreachCountByGroupUsingGet();
         if (res?.data) {
           const pieData = res.data.map((item: any) => ({
-            name: item.isBreach === '1' ? 'Breached' : 'Not Breached',
+            name: item.isBreach === '1' ? 'Users Email Breached' : 'Users Email Not Breached',
             value: parseInt(item.count, 10),
           }));
           setBreachStats(pieData);
@@ -154,7 +154,7 @@ const DetectPage: React.FC = () => {
       {breachCount !== null && !loading && (
         <div style={{ marginTop: '40px', textAlign: 'center' }}>
           <h2 style={{ color: breachCount > 0 ? 'red' : 'green', fontWeight: 'bold', fontSize: '32px' }}>
-            {breachCount > 0 ? 'Dangerous!!!' : "You're Safe 👍"}
+            {breachCount > 0 ? 'Your email was found in data breach' : "Your email was not found in data breach, You are safe!!!"}
           </h2>
 
           <div
@@ -224,7 +224,7 @@ const DetectPage: React.FC = () => {
                 {breachStats.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={entry.name === 'Breached' ? 'url(#redGradient)' : 'url(#blueGradient)'}
+                    fill={entry.name === 'Users Email Breached' ? 'url(#redGradient)' : 'url(#blueGradient)'}
                   />
                 ))}
               </Pie>

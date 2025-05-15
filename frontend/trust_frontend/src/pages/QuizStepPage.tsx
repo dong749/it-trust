@@ -1,7 +1,11 @@
 /* eslint-disable react/button-has-type */
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'umi';
-import { getQuestionByTypeUsingGet, judgeQuizUsingPost } from '../services/it-trust/quizController';
+import {
+  getQuestionByTypeUsingGet,
+  judgeQuizUsingPost,
+  getAiResponseUsingPost,
+} from '../services/it-trust/quizController';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type QuestionVO = {
@@ -33,6 +37,10 @@ const QuizStepPage: React.FC = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
+  const [userAnswers, setUserAnswers] = useState<
+    { questionId: number; userSelectedOption: string }[]
+  >([]);
+
   useEffect(() => {
     setLoading(true);
     getQuestionByTypeUsingGet({ category })
@@ -56,14 +64,6 @@ const QuizStepPage: React.FC = () => {
       });
   }, [category]);
 
-  if (loading) {
-    return <div style={{ padding: 24 }}>⏳ Loading questions...</div>;
-  }
-
-  if (!questions.length) {
-    return <div style={{ padding: 24, color: 'red' }}>⚠️ No questions found for category: {category}</div>;
-  }
-
   const currentQuestion = questions[currentIndex];
 
   const handleSubmitAnswer = async () => {
@@ -77,12 +77,21 @@ const QuizStepPage: React.FC = () => {
         questionId: currentQuestion.questionId,
         userSelectedOption: selectedOption,
       });
+
       if (res && res.data) {
         setJudgeResult(res.data);
         setHasSubmitted(true);
         if (res.data.isCorrect) {
           setCorrectCount((prev) => prev + 1);
         }
+
+        setUserAnswers((prev) => [
+          ...prev,
+          {
+            questionId: currentQuestion.questionId,
+            userSelectedOption: selectedOption,
+          },
+        ]);
       }
     } catch (error) {
       console.error('Judge failed:', error);
@@ -90,43 +99,40 @@ const QuizStepPage: React.FC = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
       setSelectedOption('');
       setJudgeResult(null);
       setHasSubmitted(false);
     } else {
-      navigate(`/quiz/result?correct=${correctCount}&total=${questions.length}`);
+      // 最后一题，调用 AI 分析接口
+      try {
+        const res = await getAiResponseUsingPost({ quizList: userAnswers });
+        const feedback = res?.data || 'No feedback generated.';
+        navigate(
+          `/quiz/result?correct=${correctCount}&total=${questions.length}&feedback=${encodeURIComponent(
+            feedback,
+          )}`,
+        );
+      } catch (error) {
+        console.error('❌ Failed to get AI feedback:', error);
+        alert('⚠️ Failed to get AI feedback.');
+        navigate(`/quiz/result?correct=${correctCount}&total=${questions.length}`);
+      }
     }
   };
 
+  if (loading) return <div style={{ padding: 24 }}>⏳ Loading questions...</div>;
+  if (!questions.length)
+    return (
+      <div style={{ padding: 24, color: 'red' }}>
+        ⚠️ No questions found for category: {category}
+      </div>
+    );
+
   return (
     <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', paddingBottom: 100 }}>
-      {/* ✅ 水印背景 */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
-        {[...Array(6)].map((_, index) => (
-          <div
-            key={index}
-            style={{
-              position: 'absolute',
-              top: `${index * 16}%`,
-              width: '200%',
-              whiteSpace: 'nowrap',
-              fontSize: 80,
-              fontWeight: 'bold',
-              color: '#ffffff',
-              opacity: 0.06,
-              transform: 'rotate(-20deg)',
-              animation: `${index % 2 === 0 ? 'scrollLeft' : 'scrollRight'} 40s linear infinite`,
-            }}
-          >
-            QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— QUIZ SYSTEM —— 
-          </div>
-        ))}
-      </div>
-
-      {/* 主内容 */}
       <div style={{ position: 'relative', zIndex: 1, padding: 24 }}>
         <h2>Q{currentIndex + 1}:</h2>
 
@@ -168,7 +174,7 @@ const QuizStepPage: React.FC = () => {
 
         <div>
           {(['A', 'B', 'C', 'D'] as const).map((opt) => {
-            const key = (`option${opt}`) as 'optionA' | 'optionB' | 'optionC' | 'optionD';
+            const key = `option${opt}` as keyof QuestionVO;
             return (
               <label key={opt} style={{ display: 'block', marginBottom: 12 }}>
                 <input
@@ -202,13 +208,21 @@ const QuizStepPage: React.FC = () => {
                 ? '✅ You are correct!'
                 : `❌ You are incorrect. The correct answer is ${judgeResult.rightAnswer}`}
             </h3>
-            <p style={{ marginTop: 8, color: 'black'}}>{judgeResult.explanation}</p>
+            <p style={{ marginTop: 8, color: 'black' }}>{judgeResult.explanation}</p>
           </motion.div>
         )}
       </div>
 
-      {/* ✅ 底部固定按钮 */}
-      <div style={{ position: 'fixed', bottom: 32, left: 0, right: 0, textAlign: 'center', zIndex: 10 }}>
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 32,
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          zIndex: 10,
+        }}
+      >
         {!hasSubmitted ? (
           <button
             onClick={handleSubmitAnswer}
@@ -244,24 +258,10 @@ const QuizStepPage: React.FC = () => {
               transition: 'background-color 0.3s',
             }}
           >
-            {currentIndex === questions.length - 1 ? 'Finish' : 'Next'}
+            {currentIndex === questions.length - 1 ? 'Finish & Get Feedback' : 'Next'}
           </button>
         )}
       </div>
-
-      {/* 背景滚动动画 keyframes */}
-      <style>
-        {`
-          @keyframes scrollLeft {
-            0% { transform: translateX(0) rotate(-20deg); }
-            100% { transform: translateX(-50%) rotate(-20deg); }
-          }
-          @keyframes scrollRight {
-            0% { transform: translateX(-50%) rotate(-20deg); }
-            100% { transform: translateX(0) rotate(-20deg); }
-          }
-        `}
-      </style>
     </div>
   );
 };

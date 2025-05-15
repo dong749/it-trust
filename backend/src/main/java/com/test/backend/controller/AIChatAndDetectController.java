@@ -31,33 +31,11 @@ public class AIChatAndDetectController
     @Resource
     private RedisUtils redisUtils;
 
-//    @GetMapping
-//    public String test()
-//    {
-//        List<ChatRequestMessage> chatMessages = new ArrayList<>();
-//        ChatRequestMessage chatRequestMessage = new ChatRequestSystemMessage(CommonConstant.CHATBOT_AI_PROMPT);
-//        ChatRequestMessage chatRequestMessageUser = new ChatRequestUserMessage("hello");
-//        chatMessages.add(chatRequestMessage);
-//        chatMessages.add(chatRequestMessageUser);
-//
-//        ChatCompletionsOptions chatCompletionsOptions = new ChatCompletionsOptions(chatMessages);
-//        chatCompletionsOptions.setMaxTokens(4096);
-//        chatCompletionsOptions.setTemperature(1d);
-//        chatCompletionsOptions.setTopP(1d);
-//        chatCompletionsOptions.setN(1);
-//
-//        ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2", chatCompletionsOptions);
-//        System.out.printf("Model ID=%s is created at %s.%n", chatCompletions.getId(), chatCompletions.getCreatedAt());
-//
-//        List<ChatChoice> choices = chatCompletions.getChoices();
-//        System.out.println("Size is: " + choices.size());
-//        System.out.println(choices.get(0).getMessage().getContent());
-//        return null;
-//    }
 
     @GetMapping("/chatbot")
     public BaseResponse<String> chatBotResponse(@RequestParam String userInput
-            , @CookieValue(value = "conversationId", required = false) String conversationId, HttpServletResponse response)
+            , @CookieValue(value = "conversationId", required = false) String conversationId
+            , HttpServletResponse response)
     {
         // User input validation
         if (StringUtils.isEmpty(userInput))
@@ -139,7 +117,8 @@ public class AIChatAndDetectController
             chatCompletionsOptions.setTemperature(1d);
             chatCompletionsOptions.setTopP(1d);
             chatCompletionsOptions.setN(1);
-            ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2", chatCompletionsOptions);
+            ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2"
+                    , chatCompletionsOptions);
             // Get AI response
             List<ChatChoice> choices = chatCompletions.getChoices();
             if (CollectionUtils.isEmpty(choices))
@@ -156,7 +135,7 @@ public class AIChatAndDetectController
             aiResponse.put("role", "assistant");
             aiResponse.put("content", reply);
             redisUtils.rightPush(chatConversationId, objectMapper.writeValueAsString(aiResponse));
-            
+
             redisUtils.expire(chatConversationId, 3600);
             return ResultUtils.success(reply);
         } catch (Exception e) {
