@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
@@ -37,24 +38,42 @@ public class AIChatAndDetectController
 
 
     @GetMapping("/chatbot")
-    public BaseResponse<String> chatBotResponse(@RequestParam String userInput
-            , @CookieValue(value = "conversationId", required = false) String conversationId
-            , HttpServletResponse response)
+    public BaseResponse<String> chatBotResponse(@RequestParam String userInput,
+                                                @CookieValue(value = "conversationId", required = false) String conversationId,
+                                                HttpServletRequest request,
+                                                HttpServletResponse response)
     {
-        // User input validation
         if (StringUtils.isEmpty(userInput))
         {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Required parameter 'userInput' is empty");
         }
 
-        // set cookie, to distinguish session records of different users
-        if (conversationId == null || conversationId.isEmpty())
+        // 如果没有 Cookie，则设置；否则跳过设置
+        if (StringUtils.isEmpty(conversationId))
         {
             conversationId = UUID.randomUUID().toString();
-            Cookie cookie = new Cookie("conversationId", conversationId);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            boolean alreadyExists = false;
+
+            if (request.getCookies() != null)
+            {
+                for (Cookie c : request.getCookies())
+                {
+                    if ("conversationId".equals(c.getName()))
+                    {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!alreadyExists)
+            {
+                Cookie cookie = new Cookie("conversationId", conversationId);
+                cookie.setPath("/");
+                cookie.setHttpOnly(true);
+                cookie.setMaxAge(3600); // 1小时
+                response.addCookie(cookie);
+            }
         }
 
         // Limit user access

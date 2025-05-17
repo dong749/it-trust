@@ -51,7 +51,7 @@ const DataSecurityPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 下方：提示框 + 正文 */}
+      {/* 下方：正文 + 提示卡片（位置已互换） */}
       <div
         style={{
           display: 'flex',
@@ -60,48 +60,7 @@ const DataSecurityPage: React.FC = () => {
           flexWrap: 'wrap',
         }}
       >
-        {/* 左侧提示卡片 */}
-        <div style={{ position: 'sticky', top: '80px', minWidth: '250px' }}>
-          <div
-            style={{
-              backgroundColor: '#f0f0f0',
-              borderRadius: '12px',
-              padding: '20px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '20px',
-                fontWeight: '600',
-                color: '#333',
-                marginBottom: '8px',
-              }}
-            >
-              🔐 Data Security
-            </div>
-            <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
-              Start a Small Game Quiz to Check Your Understanding
-            </p>
-            <button
-              onClick={handleStartQuiz}
-              style={{
-                padding: '10px 18px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: '#fff',
-                backgroundColor: '#f97316',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Get Started →
-            </button>
-          </div>
-        </div>
-
-        {/* 右侧文章正文 */}
+        {/* 正文内容（现在在左边） */}
         <div style={{ flex: 1, minWidth: '300px' }}>
           <h2 style={{ fontSize: '30px' }}>Introduce</h2>
           <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
@@ -223,6 +182,47 @@ const DataSecurityPage: React.FC = () => {
             data being collected daily, it's essential to protect personal information through best
             practices and awareness.
           </p>
+        </div>
+
+        {/* 提示卡片（现在在右边） */}
+        <div style={{ position: 'sticky', top: '80px', minWidth: '250px' }}>
+          <div
+            style={{
+              backgroundColor: '#f0f0f0',
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '8px',
+              }}
+            >
+              🔐 Data Security
+            </div>
+            <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
+              Start a Small Game Quiz to Check Your Understanding
+            </p>
+            <button
+              onClick={handleStartQuiz}
+              style={{
+                padding: '10px 18px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: '#fff',
+                backgroundColor: '#f97316',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              Get Started →
+            </button>
+          </div>
         </div>
       </div>
     </div>

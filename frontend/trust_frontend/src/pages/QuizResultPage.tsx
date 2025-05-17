@@ -28,15 +28,12 @@ const QuizResultPage: React.FC = () => {
         transition={{ duration: 0.5 }}
         style={{ width: 200, height: 200, margin: '20px auto' }}
       >
-        <Lottie
-          animationData={pass ? successAnimation : failAnimation}
-          loop
-          autoplay
-        />
+        <Lottie animationData={pass ? successAnimation : failAnimation} loop autoplay />
       </motion.div>
 
       <h2 style={{ marginTop: 20 }}>
-        You answered <span style={{ color: 'green' }}>{correct}</span> out of {total} questions correctly!
+        You answered <span style={{ color: 'green' }}>{correct}</span> out of {total} questions
+        correctly!
       </h2>
 
       <button
@@ -46,6 +43,19 @@ const QuizResultPage: React.FC = () => {
           padding: '10px 20px',
           fontSize: 18,
           cursor: 'pointer',
+          backgroundColor: '#1890ff', // 天蓝色
+          color: '#fff', // 白色文字
+          fontWeight: 'bold', // 加粗
+          border: 'none',
+          borderRadius: 6,
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          transition: 'background-color 0.3s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#40a9ff';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#1890ff';
         }}
       >
         Back to Quiz Home
@@ -67,8 +77,13 @@ const QuizResultPage: React.FC = () => {
           color: '#000',
         }}
       >
-        <h3 style={{ color: '#d48806', marginBottom: 12 }}>🧠 AI Feedback is being analyzed...</h3>
-        <p>Please check back later for your detailed feedback.</p>
+        <h3 style={{ color: '#d48806', marginBottom: 12 }}>
+          🧠 AI Feedback is being analyzed...this process may cost some time
+        </h3>
+        <p>
+          Please check back later for your detailed feedback, You can check it in Analysis Result
+          page
+        </p>
       </div>
     </div>
   );

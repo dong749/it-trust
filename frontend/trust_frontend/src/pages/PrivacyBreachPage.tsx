@@ -90,7 +90,7 @@ const PrivacyBreachPage: React.FC = () => {
 
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <Select value={year} onChange={setYear} style={{ width: 160 }}>
-          {[2020, 2021, 2022, 2023].map((y) => (
+          {[2020, 2021, 2022, 2023, 2024, 2025].map((y) => (
             <Option key={y} value={y}>{y}</Option>
           ))}
         </Select>

@@ -6,7 +6,7 @@ const PrivateDataPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleStartQuiz = () => {
-    navigate('/quiz'); // 正确跳转到 QuizPage
+    navigate('/quiz');
   };
 
   return (
@@ -48,7 +48,7 @@ const PrivateDataPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 下方：提示框 + 正文 */}
+      {/* 下方：正文 + 提示卡片（左右调换） */}
       <div
         style={{
           display: 'flex',
@@ -57,43 +57,7 @@ const PrivateDataPage: React.FC = () => {
           flexWrap: 'wrap',
         }}
       >
-        {/* 左侧提示卡片 */}
-        <div style={{ position: 'sticky', top: '80px', minWidth: '250px' }}>
-          <div
-            style={{
-              backgroundColor: '#f0f0f0',
-              borderRadius: '12px',
-              padding: '20px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div
-              style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}
-            >
-              🔐 Protect Your Data
-            </div>
-            <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
-              Start a Small Game Quiz to Check Your Understanding
-            </p>
-            <button
-              onClick={handleStartQuiz}
-              style={{
-                padding: '10px 18px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: '#fff',
-                backgroundColor: '#f97316',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Get Started →
-            </button>
-          </div>
-        </div>
-
-        {/* 右侧文章正文 */}
+        {/* 右侧文章正文（现在在左边） */}
         <div style={{ flex: 1, minWidth: '300px' }}>
           <div
             style={{
@@ -181,6 +145,42 @@ const PrivateDataPage: React.FC = () => {
             <p style={{ fontSize: '16px', color: '#ccc', lineHeight: 1.7 }}>
               Personal data is any information that identifies an individual, making it a vital aspect of privacy and security in today's digital world. As technology advances and data collection becomes more widespread, protecting personal data has become increasingly important.
             </p>
+          </div>
+        </div>
+
+        {/* 左侧提示卡片（现在在右边） */}
+        <div style={{ position: 'sticky', top: '80px', minWidth: '250px' }}>
+          <div
+            style={{
+              backgroundColor: '#f0f0f0',
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            }}
+          >
+            <div
+              style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}
+            >
+              🔐 Protect Your Data
+            </div>
+            <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
+              Start a Small Game Quiz to Check Your Understanding
+            </p>
+            <button
+              onClick={handleStartQuiz}
+              style={{
+                padding: '10px 18px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: '#fff',
+                backgroundColor: '#f97316',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              Get Started →
+            </button>
           </div>
         </div>
       </div>

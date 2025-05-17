@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'umi';
 import {
   getQuestionByTypeUsingGet,
   judgeQuizUsingPost,
-  getAiResponseWithMqUsingPost, // ✅ 使用 MQ 异步分析接口
+  getAiResponseWithMqUsingPost,
 } from '../services/it-trust/quizController';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -106,7 +106,6 @@ const QuizStepPage: React.FC = () => {
       setJudgeResult(null);
       setHasSubmitted(false);
     } else {
-      // ✅ 最后一题，调用 MQ 异步分析接口
       try {
         await getAiResponseWithMqUsingPost({ quizList: userAnswers });
       } catch (e) {
@@ -121,7 +120,7 @@ const QuizStepPage: React.FC = () => {
     }
   };
 
-  if (loading) return <div style={{ padding: 24 }}>⏳ Loading questions...</div>;
+  if (loading) return <div style={{ padding: 24, color: '#000' }}>⏳ Loading questions...</div>;
   if (!questions.length)
     return (
       <div style={{ padding: 24, color: 'red' }}>
@@ -130,7 +129,7 @@ const QuizStepPage: React.FC = () => {
     );
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', paddingBottom: 100 }}>
+    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', paddingBottom: 120, color: '#000' }}>
       <div style={{ position: 'relative', zIndex: 1, padding: 24 }}>
         <h2>Q{currentIndex + 1}:</h2>
 
@@ -141,24 +140,76 @@ const QuizStepPage: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.5 }}
-            style={{ marginBottom: 20 }}
+            style={{
+              marginBottom: 20,
+              backgroundColor: '#f9f9f9',
+              padding: 20,
+              borderRadius: 10,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+              border: '1px solid #ddd',
+            }}
           >
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              style={{ fontSize: 18 }}
-            >
-              {currentQuestion.questionDetails}
-            </motion.p>
+            {currentQuestion.questionType === 0
+              ? currentQuestion.questionDetails
+                  .split('//')
+                  .map((line, idx) => (
+                    <motion.p
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 + idx * 0.1 }}
+                      style={{ fontSize: 18, marginBottom: 6 }}
+                    >
+                      {line.trim()}
+                    </motion.p>
+                  ))
+              : (
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  style={{ fontSize: 18 }}
+                >
+                  {currentQuestion.questionDetails}
+                </motion.p>
+              )}
           </motion.div>
         </AnimatePresence>
 
         <div>
-          {(['A', 'B', 'C', 'D'] as const).map((opt) => {
+          {(['A', 'B', 'C', 'D'] as const).map((opt, idx) => {
             const key = `option${opt}` as keyof QuestionVO;
+            const backgroundColors = ['#fce4ec', '#e3f2fd', '#f3e5f5', '#e8f5e9'];
+            const hoverColor = backgroundColors[idx % backgroundColors.length];
+
             return (
-              <label key={opt} style={{ display: 'block', marginBottom: 12 }}>
+              <label
+                key={opt}
+                style={{
+                  display: 'block',
+                  marginBottom: 12,
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  border: '1px solid #ccc',
+                  cursor: hasSubmitted ? 'default' : 'pointer',
+                  transition: 'background-color 0.3s, transform 0.2s',
+                  backgroundColor: selectedOption === opt ? hoverColor : '#fff',
+                  fontWeight: selectedOption === opt ? 'bold' : 'normal',
+                }}
+                onMouseEnter={(e) => {
+                  if (!hasSubmitted) {
+                    (e.currentTarget as HTMLLabelElement).style.backgroundColor = hoverColor;
+                    (e.currentTarget as HTMLLabelElement).style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!hasSubmitted) {
+                    (e.currentTarget as HTMLLabelElement).style.backgroundColor =
+                      selectedOption === opt ? hoverColor : '#fff';
+                    (e.currentTarget as HTMLLabelElement).style.transform = 'scale(1)';
+                  }
+                }}
+              >
                 <input
                   type="radio"
                   name="option"
@@ -166,6 +217,7 @@ const QuizStepPage: React.FC = () => {
                   checked={selectedOption === opt}
                   disabled={hasSubmitted}
                   onChange={() => setSelectedOption(opt)}
+                  style={{ marginRight: 8 }}
                 />
                 {opt}. {currentQuestion[key]}
               </label>
@@ -183,6 +235,7 @@ const QuizStepPage: React.FC = () => {
               padding: 16,
               background: judgeResult.isCorrect ? '#e0ffe0' : '#ffe0e0',
               borderRadius: 8,
+              color: '#000',
             }}
           >
             <h3 style={{ color: judgeResult.isCorrect ? 'green' : 'red' }}>
@@ -190,11 +243,12 @@ const QuizStepPage: React.FC = () => {
                 ? '✅ You are correct!'
                 : `❌ You are incorrect. The correct answer is ${judgeResult.rightAnswer}`}
             </h3>
-            <p style={{ marginTop: 8, color: 'black' }}>{judgeResult.explanation}</p>
+            <p style={{ marginTop: 8 }}>{judgeResult.explanation}</p>
           </motion.div>
         )}
       </div>
 
+      {/* 底部按钮 + 进度条 */}
       <div
         style={{
           position: 'fixed',
@@ -243,6 +297,31 @@ const QuizStepPage: React.FC = () => {
             {currentIndex === questions.length - 1 ? 'Finish & Get Feedback' : 'Next'}
           </button>
         )}
+
+        {/* Quiz 进度条显示 */}
+        <div style={{ marginTop: 16, width: '60%', marginInline: 'auto' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: 4, color: '#fff'}}>
+            Quiz {currentIndex + 1} of {questions.length}
+          </div>
+          <div
+            style={{
+              width: '100%',
+              height: '10px',
+              backgroundColor: '#eee',
+              borderRadius: '5px',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                width: `${((currentIndex + 1) / questions.length) * 100}%`,
+                backgroundColor: '#1890ff',
+                transition: 'width 0.3s ease',
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

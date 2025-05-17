@@ -60,132 +60,60 @@ const DetectPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '100px' }}>
-      {/* 顶部标题 */}
-      <div
-        style={{
-          border: '2px solid #fff',
-          borderRadius: '16px',
-          padding: '40px 30px',
-          maxWidth: '700px',
-          textAlign: 'center',
-          backgroundColor: 'transparent',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '35px',
-            fontWeight: 'bold',
-            color: '#fff',
-            textShadow: '3px 3px 5px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.5)',
-            fontFamily: 'Verdana, Geneva, sans-serif',
-            letterSpacing: '2px',
-            margin: 0,
-          }}
-        >
+      {/* 标题 */}
+      <div style={{ border: '2px solid #fff', borderRadius: '16px', padding: '40px 30px', maxWidth: '700px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '35px', fontWeight: 'bold', color: '#fff', textShadow: '3px 3px 5px rgba(0, 0, 0, 0.3)' }}>
           Check if your email address is in a data breach
         </h1>
       </div>
 
-      {/* 搜索框 */}
-      <div
-        style={{
-          marginTop: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          maxWidth: '800px',
-          justifyContent: 'center',
-        }}
-      >
+      {/* 输入框 */}
+      <div style={{ marginTop: '40px', display: 'flex', alignItems: 'center', maxWidth: '800px', width: '100%', justifyContent: 'center' }}>
         <input
           type="text"
           placeholder="Enter your email..."
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '12px 16px',
-            borderRadius: '9999px 0 0 9999px',
-            border: '2px solid #fff',
-            outline: 'none',
-            fontSize: '16px',
-            backgroundColor: 'transparent',
-            color: '#fff',
-          }}
+          style={{ flex: 1, padding: '12px 16px', borderRadius: '9999px 0 0 9999px', border: '2px solid #fff', backgroundColor: 'transparent', color: '#fff', fontSize: '16px' }}
         />
         <button
           onClick={handleSearch}
-          style={{
-            padding: '12px 24px',
-            borderRadius: '0 9999px 9999px 0',
-            border: '2px solid #fff',
-            borderLeft: 'none',
-            backgroundColor: '#3b82f6',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-          }}
+          style={{ padding: '12px 24px', borderRadius: '0 9999px 9999px 0', border: '2px solid #fff', borderLeft: 'none', backgroundColor: '#3b82f6', color: '#fff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
         >
           Search
         </button>
       </div>
 
-      {/* 错误信息 */}
       {errorMsg && <div style={{ color: 'red', marginTop: '12px', fontWeight: 500 }}>{errorMsg}</div>}
 
-      {/* 加载动画 */}
       {loading && (
         <div style={{ marginTop: '20px' }}>
-          <div
-            style={{
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #3b82f6',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
+          <div style={{ border: '4px solid #f3f3f3', borderTop: '4px solid #3b82f6', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite' }} />
         </div>
       )}
 
-      {/* Danger / Safe 提示 */}
       {breachCount !== null && !loading && (
         <div style={{ marginTop: '40px', textAlign: 'center' }}>
           <h2 style={{ color: breachCount > 0 ? 'red' : 'green', fontWeight: 'bold', fontSize: '32px' }}>
-            {breachCount > 0 ? 'Your email was found in data breach' : "Your email was not found in data breach, You are safe!!!"}
+            {breachCount > 0
+              ? 'Your email was found in data breach'
+              : 'Your email was not found in data breach, You are safe!!!'}
           </h2>
 
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: '20px',
-              marginTop: '20px',
-              marginBottom: '40px',
-            }}
-          >
-            {[
-              'Use strong, unique passwords for each site',
-              'Enable Two-Factor Authentication (2FA)',
-              'Avoid clicking suspicious links or attachments',
-            ].map((tip, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: breachCount > 0 ? '#dc2626' : '#16a34a',
-                  color: 'white',
-                  padding: '20px',
-                  borderRadius: '12px',
-                  width: '280px',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  textAlign: 'center',
-                }}
-              >
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '20px', marginBottom: '40px' }}>
+            {(breachCount > 0
+              ? [
+                  '🔐 Immediately reset your password on affected sites.',
+                  '📧 Add an extra layer of security to your accounts using 2FA wherever possible',
+                  '🛑 Consider freezing credit if financial info was involved.',
+                ]
+              : [
+                  '✅ Use strong, unique passwords for each site.',
+                  '✅ Enable Two-Factor Authentication (2FA).',
+                  '✅ Avoid clicking suspicious links or attachments.',
+                ]
+            ).map((tip, index) => (
+              <div key={index} style={{ backgroundColor: breachCount > 0 ? '#dc2626' : '#16a34a', color: 'white', padding: '20px', borderRadius: '12px', width: '280px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', fontSize: '16px', fontWeight: 500, textAlign: 'left' }}>
                 {tip}
               </div>
             ))}
@@ -193,9 +121,7 @@ const DetectPage: React.FC = () => {
         </div>
       )}
 
-      {/* 饼图 + 危害说明区域 */}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px', marginTop: '40px' }}>
-        {/* 饼图区域靠左 */}
         <div style={{ width: '100%', maxWidth: '500px', height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -217,9 +143,28 @@ const DetectPage: React.FC = () => {
                 cy="50%"
                 outerRadius={100}
                 innerRadius={40}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                 stroke="#222"
                 strokeWidth={1}
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="#fff"
+                      fontWeight="bold"
+                      textAnchor={x > cx ? 'start' : 'end'}
+                      dominantBaseline="central"
+                      style={{ fontSize: '14px' }}
+                    >
+                      {`${name} (${(percent * 100).toFixed(0)}%)`}
+                    </text>
+                  );
+                }}
               >
                 {breachStats.map((entry, index) => (
                   <Cell
@@ -234,7 +179,6 @@ const DetectPage: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* 危害说明区域 */}
         <div style={{ maxWidth: '400px', color: '#ccc', fontSize: '16px', lineHeight: 1.7 }}>
           <h3 style={{ color: '#fff', marginBottom: '12px' }}>Why a Breach Matters</h3>
           <ul style={{ paddingLeft: '20px' }}>
@@ -247,7 +191,6 @@ const DetectPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 动画样式 */}
       <style>
         {`
           @keyframes spin {

@@ -162,7 +162,7 @@ const Welcome: React.FC = () => {
         }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2A5DA8')}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4A90E2')}
-        onClick={() => navigate('/learning')}
+        onClick={() => navigate('/visualization')}
       >
         Lets Protect Your Data
       </button>

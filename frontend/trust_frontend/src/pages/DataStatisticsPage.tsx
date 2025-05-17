@@ -76,32 +76,32 @@ const DataStatisticsPage: React.FC = () => {
     if (!canvasRef.current) return;
     if (chartInstance) chartInstance.destroy();
 
-    const years = Array.from(new Set(data.map((item) => item.year)));
     const statesInData = Array.from(new Set(data.map((item) => item.state)));
-    const chartType = years.length > 1 ? 'line' : 'bar';
+    const years = Array.from(new Set(data.map((item) => item.year)));
+    const labels = statesInData.length === 1 ? years : statesInData;
 
-    const labels = chartType === 'line' ? years : statesInData;
     const datasetData =
-      chartType === 'line'
-        ? years.map((year) => data.find((d) => d.year === year)?.reports ?? 0)
+      statesInData.length === 1
+        ? years.map((year) =>
+            data.find((d) => d.year === year)?.reports ?? 0
+          )
         : statesInData.map((state) =>
-            data.filter((d) => d.state === state).reduce((sum, cur) => sum + (cur.reports || 0), 0),
+            data
+              .filter((d) => d.state === state)
+              .reduce((sum, cur) => sum + (cur.reports || 0), 0)
           );
 
     const newChart = new Chart(canvasRef.current, {
-      type: chartType as any,
+      type: 'bar',
       data: {
         labels,
         datasets: [
           {
             label: 'Reports',
             data: datasetData,
-            borderColor: '#4FC3F7',
-            backgroundColor: 'transparent',
-            pointBackgroundColor: '#4FC3F7',
-            pointBorderColor: '#4FC3F7',
-            fill: false,
-            tension: 0.3,
+            backgroundColor: '#4FC3F7',
+            borderColor: '#0288D1',
+            borderWidth: 1,
           },
         ],
       },
@@ -121,7 +121,7 @@ const DataStatisticsPage: React.FC = () => {
             grid: { color: 'rgba(255,255,255,0.1)' },
             title: {
               display: true,
-              text: chartType === 'line' ? 'Year' : 'State',
+              text: statesInData.length === 1 ? 'Year' : 'State',
               color: '#ffffff',
             },
           },
@@ -130,7 +130,7 @@ const DataStatisticsPage: React.FC = () => {
             grid: { color: 'rgba(255,255,255,0.1)' },
             title: {
               display: true,
-              text: 'Data Leaked Reports per Year',
+              text: 'Number of Reports',
               color: '#ffffff',
             },
           },

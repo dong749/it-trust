@@ -113,7 +113,7 @@ export default [
 
   {
     path: 'visualization',
-    name: 'Visualization',
+    name: 'Trends and Statistics',
     routes: [
       {
         path: '',

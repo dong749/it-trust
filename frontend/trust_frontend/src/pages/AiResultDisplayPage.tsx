@@ -28,13 +28,13 @@ const AiResultDisplayPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <h2>📊 AI Feedback Results</h2>
+      <h2 style={{ color: '#fff', marginBottom: 20 }}>📊 AI Feedback Results</h2>
       {loading ? (
-        <p>⏳ Loading...</p>
+        <p style={{ color: '#ccc' }}>⏳ Loading...</p>
       ) : data.length === 0 ? (
-        <p>No data available.</p>
+        <p style={{ color: '#ccc' }}>No data available.</p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff' }}>
           <thead>
             <tr>
               <th style={thStyle}>Quiz Time</th>
@@ -60,14 +60,17 @@ const AiResultDisplayPage: React.FC = () => {
 const thStyle: React.CSSProperties = {
   border: '1px solid #ccc',
   padding: 8,
-  backgroundColor: '#f0f0f0',
+  backgroundColor: 'transparent', // 去掉表头填充色
   textAlign: 'left',
+  fontWeight: 'bold',
+  color: '#fff',
 };
 
 const tdStyle: React.CSSProperties = {
   border: '1px solid #ccc',
   padding: 8,
   verticalAlign: 'top',
+  color: '#eee',
 };
 
 export default AiResultDisplayPage;
