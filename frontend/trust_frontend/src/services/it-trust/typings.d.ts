@@ -1,7 +1,19 @@
 declare namespace API {
+  type AiAnalysisResultVO = {
+    aiResponse?: string;
+    finishedTime?: string;
+    questionCategory?: string;
+  };
+
   type BaseResponseDataLeakedByStateResponseVO_ = {
     code?: number;
     data?: DataLeakedByStateResponseVO;
+    message?: string;
+  };
+
+  type BaseResponseListAiAnalysisResultVO_ = {
+    code?: number;
+    data?: AiAnalysisResultVO[];
     message?: string;
   };
 

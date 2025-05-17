@@ -1,7 +1,9 @@
 /* eslint-disable react/button-has-type */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { chatBotResponseUsingGet } from '../services/it-trust/aiChatAndDetectController'; // 替换为你的 API 文件路径
+import { chatBotResponseUsingGet } from '../services/it-trust/aiChatAndDetectController';
+import Lottie from 'lottie-react';
+import ChatbotAnimation from '../../public/ChatBot/ChatBot.json'; // ✅ 必须放在 src/assets 中
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
@@ -11,18 +13,45 @@ const Welcome: React.FC = () => {
     { from: 'bot', text: '👋 Hi! How can I help you with data security?' },
   ]);
   const [loading, setLoading] = useState(false);
+  const chatBoxRef = useRef<HTMLDivElement | null>(null);
+  const lottieRef = useRef<any>(null); // 控制 Lottie 动画
+
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes blink {
+        0%, 80%, 100% { opacity: 0; }
+        40% { opacity: 1; }
+      }
+      .typing-dots span {
+        animation: blink 1.5s infinite;
+        font-size: 20px;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
-
     const input = userInput.trim();
-    const userMessage = { from: 'user' as const, text: input };
-    setChatHistory((prev) => [...prev, userMessage]);
+    setChatHistory((prev) => [...prev, { from: 'user', text: input }]);
     setUserInput('');
     setLoading(true);
-
     try {
-      const res = await chatBotResponseUsingGet({ userInput: input }, input);
+      const res = await chatBotResponseUsingGet({ userInput: input });
       const botReply = res?.data || '🤖 Sorry, I did not understand that.';
       setChatHistory((prev) => [...prev, { from: 'bot', text: botReply }]);
     } catch (err) {
@@ -154,21 +183,49 @@ const Welcome: React.FC = () => {
         }}
       />
 
-      {/* 左下角聊天图标 */}
-      <img
-        src="/chatbot.gif"
-        alt="Chatbot Icon"
+      {/* Lottie 聊天机器人 + 上方艺术字 */}
+      <div
         style={{
           position: 'absolute',
-          bottom: '2%',
-          left: '2%',
-          width: '80px',
-          height: '80px',
-          cursor: 'pointer',
+          bottom: '18%',
+          left: '8%',
+          width: '160px',
+          height: '180px',
           zIndex: 1000,
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         onClick={() => setShowChat(!showChat)}
-      />
+        onMouseEnter={() => lottieRef.current?.play()}
+        onMouseLeave={() => lottieRef.current?.pause()}
+      >
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 'bold',
+            color: '#4A90E2',
+            textAlign: 'center',
+            marginBottom: '6px',
+            fontFamily: 'cursive',
+            lineHeight: '1.2',
+            textShadow: '0 0 3px rgba(0,0,0,0.2)',
+          }}
+        >
+          I am a Data Protector,<br />
+          Click me you can ask me <br />
+          anything about data security
+        </div>
+        <Lottie
+          lottieRef={lottieRef}
+          animationData={ChatbotAnimation}
+          loop
+          autoplay={false}
+          style={{ width: '160px', height: '160px' }}
+        />
+      </div>
 
       {/* 聊天框 */}
       {showChat && (
@@ -177,7 +234,8 @@ const Welcome: React.FC = () => {
             position: 'absolute',
             bottom: '90px',
             left: '2%',
-            width: '700px',
+            width: '90vw',
+            maxWidth: '700px',
             height: '400px',
             backgroundColor: '#fff',
             border: '2px solid #4A90E2',
@@ -189,11 +247,26 @@ const Welcome: React.FC = () => {
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#4A90E2' }}>
-            Chatbot Assistant
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#4A90E2' }}>
+              Data Protector Assistant
+            </div>
+            <button
+              onClick={() => setShowChat(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '18px',
+                cursor: 'pointer',
+                color: '#888',
+              }}
+            >
+              ✖
+            </button>
           </div>
 
           <div
+            ref={chatBoxRef}
             style={{
               flex: 1,
               overflowY: 'auto',
@@ -225,12 +298,18 @@ const Welcome: React.FC = () => {
                     whiteSpace: 'pre-wrap',
                   }}
                 >
-                  <b>{msg.from === 'user' ? 'You' : 'Bot'}:</b> {msg.text}
+                  <b>{msg.from === 'user' ? 'You' : 'Assistant'}:</b> {msg.text}
                 </div>
               </div>
             ))}
             {loading && (
-              <div style={{ fontStyle: 'italic', color: '#888' }}>Bot is typing...</div>
+              <div style={{ color: '#4A90E2', marginLeft: 5 }}>
+                <span className="typing-dots">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              </div>
             )}
           </div>
 
@@ -250,6 +329,7 @@ const Welcome: React.FC = () => {
                 border: '1px solid #ccc',
                 fontSize: '14px',
                 marginRight: '5px',
+                color: '#666',
               }}
             />
             <button

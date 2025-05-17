@@ -106,6 +106,12 @@ export default [
   },
 
   {
+    path: 'result',
+    name: 'Analysis Result',
+    component: './AiResultDisplayPage',
+  },
+
+  {
     path: 'visualization',
     name: 'Visualization',
     routes: [

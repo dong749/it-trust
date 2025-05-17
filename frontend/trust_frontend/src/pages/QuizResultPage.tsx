@@ -11,7 +11,6 @@ const QuizResultPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const correct = parseInt(searchParams.get('correct') || '0', 10);
   const total = parseInt(searchParams.get('total') || '0', 10);
-  const feedback = decodeURIComponent(searchParams.get('feedback') || ''); // ✅ 获取AI反馈
 
   const handleBack = () => {
     history.push('/quiz');
@@ -52,28 +51,25 @@ const QuizResultPage: React.FC = () => {
         Back to Quiz Home
       </button>
 
-      {/* ✅ AI反馈总结区域 */}
-      {feedback && (
-        <div
-          style={{
-            marginTop: 40,
-            padding: 20,
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            backgroundColor: '#f9f9f9',
-            textAlign: 'left',
-            maxWidth: 800,
-            marginInline: 'auto',
-            whiteSpace: 'pre-wrap',
-            fontSize: 16,
-            lineHeight: 1.6,
-            color: '#000', // ✅ 设置黑色字体
-          }}
-        >
-          <h3 style={{ color: '#333', marginBottom: 12 }}>🧠 AI Feedback Summary</h3>
-          <div>{feedback}</div>
-        </div>
-      )}
+      {/* 提示 AI 正在分析中 */}
+      <div
+        style={{
+          marginTop: 40,
+          padding: 20,
+          border: '1px dashed #aaa',
+          borderRadius: 8,
+          backgroundColor: '#fff9f0',
+          textAlign: 'center',
+          maxWidth: 700,
+          marginInline: 'auto',
+          fontSize: 16,
+          lineHeight: 1.6,
+          color: '#000',
+        }}
+      >
+        <h3 style={{ color: '#d48806', marginBottom: 12 }}>🧠 AI Feedback is being analyzed...</h3>
+        <p>Please check back later for your detailed feedback.</p>
+      </div>
     </div>
   );
 };

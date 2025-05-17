@@ -17,6 +17,21 @@ export async function getAiResponseUsingPost(
   });
 }
 
+/** getAiResponseWithMQ POST /api/quiz/feedbackMq */
+export async function getAiResponseWithMqUsingPost(
+  body: API.UserQuizBatchSubmitDTO,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseString_>('/api/quiz/feedbackMq', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** judgeQuiz POST /api/quiz/judge */
 export async function judgeQuizUsingPost(
   body: API.UserQuizSubmitDTO,
@@ -43,6 +58,14 @@ export async function getQuestionByTypeUsingGet(
     params: {
       ...params,
     },
+    ...(options || {}),
+  });
+}
+
+/** getAnalysisResult GET /api/quiz/result */
+export async function getAnalysisResultUsingGet(options?: { [key: string]: any }) {
+  return request<API.BaseResponseListAiAnalysisResultVO_>('/api/quiz/result', {
+    method: 'GET',
     ...(options || {}),
   });
 }

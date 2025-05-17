@@ -12,10 +12,14 @@ import com.test.backend.constant.RedisKeysConstant;
 import com.test.backend.exception.BusinessException;
 import com.test.backend.model.dto.UserQuizBatchSubmitDTO;
 import com.test.backend.model.dto.UserQuizSubmitDTO;
+import com.test.backend.model.entity.AiAnalysisResult;
 import com.test.backend.model.entity.QuestionAnswer;
 import com.test.backend.model.entity.QuestionBody;
+import com.test.backend.model.vo.AiAnalysisResultVO;
 import com.test.backend.model.vo.QuestionVO;
 import com.test.backend.model.vo.UserQuizSubmitVO;
+import com.test.backend.mq.QuizResultAIMessageProducer;
+import com.test.backend.service.AiAnalysisResultService;
 import com.test.backend.service.QuestionAnswerService;
 import com.test.backend.service.QuestionBodyService;
 import com.test.backend.utils.RedisUtils;
@@ -25,9 +29,13 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,6 +54,12 @@ public class QuizController
 
     @Resource
     private OpenAIClient openAIClient;
+
+    @Resource
+    private QuizResultAIMessageProducer quizResultAIMessageProducer;
+
+    @Resource
+    private AiAnalysisResultService aiAnalysisResultService;
 
 
     @GetMapping("quizByType")
@@ -149,14 +163,104 @@ public class QuizController
         return ResultUtils.success(userQuizSubmitVO);
     }
 
-    @PostMapping("/feedback")
-    public BaseResponse<String> getAiResponse(@RequestBody UserQuizBatchSubmitDTO userQuizBatchSubmitDTO)
+//    @PostMapping("/feedback")
+//    public BaseResponse<String> getAiResponse(@RequestBody UserQuizBatchSubmitDTO userQuizBatchSubmitDTO)
+//    {
+//
+//        if (ObjectUtils.isEmpty(userQuizBatchSubmitDTO) || CollectionUtils.isEmpty(userQuizBatchSubmitDTO.getQuizList()))
+//        {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Invalid quiz data");
+//        }
+//        StringBuilder aiAnalysis = new StringBuilder();
+//        for (UserQuizSubmitDTO userQuizSubmitDTO : userQuizBatchSubmitDTO.getQuizList())
+//        {
+//            Long questionId = userQuizSubmitDTO.getQuestionId();
+//            String userSelectedOption = userQuizSubmitDTO.getUserSelectedOption();
+//
+//            QuestionBody questionBody = questionBodyService.getById(questionId);
+//            questionBody.getQuestionCategory();
+//            if (ObjectUtils.isEmpty(questionBody))
+//            {
+//                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Question body not found");
+//            }
+//            QuestionAnswer questionAnswer = questionAnswerService.getOne(new QueryWrapper<QuestionAnswer>()
+//                    .eq("questionId", questionId));
+//            String optionA = questionAnswer.getOptionA();
+//            String optionB = questionAnswer.getOptionB();
+//            String optionC = questionAnswer.getOptionC();
+//            String optionD = questionAnswer.getOptionD();
+//
+//            aiAnalysis.append("Question: ").append(questionBody.getQuestionDetails()).append("\n")
+//                    .append("Options: ").append("\n")
+//                    .append("A.").append(optionA).append("\n")
+//                    .append("B.").append(optionB).append("\n")
+//                    .append("C.").append(optionC).append("\n")
+//                    .append("D.").append(optionD).append("\n")
+//                    .append("User selectedOption: ").append(userSelectedOption)
+//                    .append("Right Answer: ").append(questionAnswer.getCorrectAnswer())
+//                    .append("\n\n");
+//        }
+//
+//
+//
+//        List<ChatRequestMessage> chatRequestMessageList = new ArrayList<>();
+//        ChatRequestMessage chatRequestSystemMessage = new ChatRequestSystemMessage(CommonConstant.QUIZ_FEED_BACK_PROMPT);
+//        ChatRequestMessage chatRequestUserMessage = new ChatRequestUserMessage(aiAnalysis.toString());
+//        chatRequestMessageList.add(chatRequestSystemMessage);
+//        chatRequestMessageList.add(chatRequestUserMessage);
+//        ChatCompletionsOptions chatCompletionsOptions = new ChatCompletionsOptions(chatRequestMessageList);
+//        chatCompletionsOptions.setMaxTokens(4096);
+//        chatCompletionsOptions.setTemperature(1d);
+//        chatCompletionsOptions.setTopP(1d);
+//
+//        ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2"
+//                , chatCompletionsOptions);
+//        List<ChatChoice> choices = chatCompletions.getChoices();
+//        String reply = choices.get(0).getMessage().getContent();
+//        return ResultUtils.success(reply);
+//    }
+
+
+    @PostMapping("/feedbackMq")
+    public BaseResponse<String> getAiResponseWithMQ(
+            @RequestBody UserQuizBatchSubmitDTO userQuizBatchSubmitDTO,
+            HttpServletRequest request,
+            HttpServletResponse response)
     {
-        if (ObjectUtils.isEmpty(userQuizBatchSubmitDTO) || CollectionUtils.isEmpty(userQuizBatchSubmitDTO.getQuizList()))
+
+        // ✅ 手动获取 Cookie
+        String conversationId = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("conversationId".equals(c.getName())) {
+                    conversationId = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        // ✅ 如果没有就设置新的 Cookie
+        if (conversationId == null || conversationId.isEmpty())
+        {
+            conversationId = UUID.randomUUID().toString();
+            Cookie cookie = new Cookie("conversationId", conversationId);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
+
+        if (ObjectUtils.isEmpty(userQuizBatchSubmitDTO)
+                || CollectionUtils.isEmpty(userQuizBatchSubmitDTO.getQuizList()))
         {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Invalid quiz data");
         }
+
         StringBuilder aiAnalysis = new StringBuilder();
+        Long id = userQuizBatchSubmitDTO.getQuizList().get(0).getQuestionId();
+        QuestionBody questionDetails = questionBodyService.getById(id);
+        String questionCategory = questionDetails.getQuestionCategory();
+
         for (UserQuizSubmitDTO userQuizSubmitDTO : userQuizBatchSubmitDTO.getQuizList())
         {
             Long questionId = userQuizSubmitDTO.getQuestionId();
@@ -167,38 +271,51 @@ public class QuizController
             {
                 throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "Question body not found");
             }
-            QuestionAnswer questionAnswer = questionAnswerService.getOne(new QueryWrapper<QuestionAnswer>()
-                    .eq("questionId", questionId));
-            String optionA = questionAnswer.getOptionA();
-            String optionB = questionAnswer.getOptionB();
-            String optionC = questionAnswer.getOptionC();
-            String optionD = questionAnswer.getOptionD();
+            QuestionAnswer questionAnswer = questionAnswerService.getOne(
+                    new QueryWrapper<QuestionAnswer>().eq("questionId", questionId));
 
             aiAnalysis.append("Question: ").append(questionBody.getQuestionDetails()).append("\n")
                     .append("Options: ").append("\n")
-                    .append("A.").append(optionA).append("\n")
-                    .append("B.").append(optionB).append("\n")
-                    .append("C.").append(optionC).append("\n")
-                    .append("D.").append(optionD).append("\n")
-                    .append("User selectedOption: ").append(userSelectedOption)
-                    .append("Right Answer: ").append(questionAnswer.getCorrectAnswer())
-                    .append("\n\n");
+                    .append("A.").append(questionAnswer.getOptionA()).append("\n")
+                    .append("B.").append(questionAnswer.getOptionB()).append("\n")
+                    .append("C.").append(questionAnswer.getOptionC()).append("\n")
+                    .append("D.").append(questionAnswer.getOptionD()).append("\n")
+                    .append("User selectedOption: ").append(userSelectedOption).append("\n")
+                    .append("Right Answer: ").append(questionAnswer.getCorrectAnswer()).append("\n\n");
         }
 
-        List<ChatRequestMessage> chatRequestMessageList = new ArrayList<>();
-        ChatRequestMessage chatRequestSystemMessage = new ChatRequestSystemMessage(CommonConstant.QUIZ_FEED_BACK_PROMPT);
-        ChatRequestMessage chatRequestUserMessage = new ChatRequestUserMessage(aiAnalysis.toString());
-        chatRequestMessageList.add(chatRequestSystemMessage);
-        chatRequestMessageList.add(chatRequestUserMessage);
-        ChatCompletionsOptions chatCompletionsOptions = new ChatCompletionsOptions(chatRequestMessageList);
-        chatCompletionsOptions.setMaxTokens(4096);
-        chatCompletionsOptions.setTemperature(1d);
-        chatCompletionsOptions.setTopP(1d);
-
-        ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2"
-                , chatCompletionsOptions);
-        List<ChatChoice> choices = chatCompletions.getChoices();
-        String reply = choices.get(0).getMessage().getContent();
-        return ResultUtils.success(reply);
+        // ✅ 发送到消息队列
+        quizResultAIMessageProducer.sendMessage(aiAnalysis.toString(), conversationId, questionCategory);
+        return ResultUtils.success("ok");
     }
+
+    @GetMapping("/result")
+    public BaseResponse<List<AiAnalysisResultVO>> getAnalysisResult(HttpServletRequest request)
+    {
+        String conversationId = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("conversationId".equals(c.getName())) {
+                    conversationId = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        QueryWrapper<AiAnalysisResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("cookieId", conversationId);
+        List<AiAnalysisResult> list = aiAnalysisResultService.list(queryWrapper);
+        List<AiAnalysisResultVO> resultList = new ArrayList<>();
+        for (AiAnalysisResult aiAnalysisResult : list)
+        {
+            AiAnalysisResultVO resultVO = new AiAnalysisResultVO();
+            resultVO.setAiResponse(aiAnalysisResult.getAiAnalysisResult());
+            resultVO.setQuestionCategory(aiAnalysisResult.getQuestionCategory());
+            resultVO.setFinishedTime(aiAnalysisResult.getCreateTime());
+            resultList.add(resultVO);
+        }
+        return ResultUtils.success(resultList);
+    }
+
 }

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'umi';
 import {
   getQuestionByTypeUsingGet,
   judgeQuizUsingPost,
-  getAiResponseUsingPost,
+  getAiResponseWithMqUsingPost, // ✅ 使用 MQ 异步分析接口
 } from '../services/it-trust/quizController';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -106,19 +106,17 @@ const QuizStepPage: React.FC = () => {
       setJudgeResult(null);
       setHasSubmitted(false);
     } else {
-      // 最后一题，调用 AI 分析接口
+      // ✅ 最后一题，调用 MQ 异步分析接口
       try {
-        const res = await getAiResponseUsingPost({ quizList: userAnswers });
-        const feedback = res?.data || 'No feedback generated.';
+        await getAiResponseWithMqUsingPost({ quizList: userAnswers });
+      } catch (e) {
+        console.warn('⚠️ MQ feedback submission failed:', e);
+      } finally {
         navigate(
           `/quiz/result?correct=${correctCount}&total=${questions.length}&feedback=${encodeURIComponent(
-            feedback,
+            'AI is analyzing your results, please check back shortly.',
           )}`,
         );
-      } catch (error) {
-        console.error('❌ Failed to get AI feedback:', error);
-        alert('⚠️ Failed to get AI feedback.');
-        navigate(`/quiz/result?correct=${correctCount}&total=${questions.length}`);
       }
     }
   };
@@ -145,30 +143,14 @@ const QuizStepPage: React.FC = () => {
             transition={{ duration: 0.5 }}
             style={{ marginBottom: 20 }}
           >
-            {currentQuestion.questionType === 0 ? (
-              currentQuestion.questionDetails
-                .split('//')
-                .map((sentence, idx) => (
-                  <motion.p
-                    key={idx}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: idx * 0.25 }}
-                    style={{ marginBottom: 8, fontSize: 18 }}
-                  >
-                    {sentence}
-                  </motion.p>
-                ))
-            ) : (
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                style={{ fontSize: 18 }}
-              >
-                {currentQuestion.questionDetails}
-              </motion.p>
-            )}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              style={{ fontSize: 18 }}
+            >
+              {currentQuestion.questionDetails}
+            </motion.p>
           </motion.div>
         </AnimatePresence>
 
