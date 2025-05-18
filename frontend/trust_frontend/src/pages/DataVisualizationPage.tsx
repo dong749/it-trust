@@ -27,7 +27,7 @@ const DataVisualizationPage: React.FC = () => {
           marginBottom: '20px',
         }}
       >
-        Data Visualization
+        Data Leak Statistics
       </h1>
 
       <p style={{ fontSize: '18px', color: '#ccc', marginBottom: '40px' }}>

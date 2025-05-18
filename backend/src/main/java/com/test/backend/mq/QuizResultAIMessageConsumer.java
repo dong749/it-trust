@@ -37,6 +37,7 @@ public class QuizResultAIMessageConsumer
     public void receiveMessage(AiAnalysisResultDTO aiAnalysisResultDTO
             , Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag)
     {
+        // Message Validation
         if (ObjectUtils.isEmpty(aiAnalysisResultDTO))
         {
             channel.basicNack(tag, false, false);
@@ -47,6 +48,7 @@ public class QuizResultAIMessageConsumer
         String message = aiAnalysisResultDTO.getMessage();
         String questionCategory = aiAnalysisResultDTO.getQuestionCategory();
 
+        // Input validation
         if (StringUtils.isEmpty(questionCategory) || StringUtils.isEmpty(conversationId)
                 || StringUtils.isEmpty(message) || StringUtils.isEmpty(questionCategory))
         {
@@ -54,6 +56,7 @@ public class QuizResultAIMessageConsumer
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Parameter is empty");
         }
 
+        // AI invoke configuration
         List<ChatRequestMessage> chatRequestMessageList = new ArrayList<>();
         ChatRequestMessage chatRequestSystemMessage = new ChatRequestSystemMessage(CommonConstant.QUIZ_FEED_BACK_PROMPT);
         ChatRequestMessage chatRequestUserMessage = new ChatRequestUserMessage(message);
@@ -64,6 +67,7 @@ public class QuizResultAIMessageConsumer
         chatCompletionsOptions.setTemperature(1d);
         chatCompletionsOptions.setTopP(1d);
 
+        // AI invoke
         ChatCompletions chatCompletions = openAIClient.getChatCompletions("gpt-4o-mini-2"
                 , chatCompletionsOptions);
         List<ChatChoice> choices = chatCompletions.getChoices();
@@ -75,6 +79,7 @@ public class QuizResultAIMessageConsumer
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "AI Response Failed");
         }
 
+        // Save result into Database
         AiAnalysisResult aiAnalysisResult = new AiAnalysisResult();
         aiAnalysisResult.setCookieId(conversationId);
         aiAnalysisResult.setQuestionCategory(questionCategory);
@@ -88,6 +93,7 @@ public class QuizResultAIMessageConsumer
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "AI Response Save Error");
         }
 
+        // Confirm message process successfully
         channel.basicAck(tag, false);
     }
 }

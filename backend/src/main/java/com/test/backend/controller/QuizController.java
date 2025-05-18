@@ -228,7 +228,7 @@ public class QuizController
             HttpServletResponse response)
     {
 
-        // ✅ 手动获取 Cookie
+        // Get cookie
         String conversationId = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -240,7 +240,7 @@ public class QuizController
             }
         }
 
-        // ✅ 如果没有就设置新的 Cookie
+        // if current user dont have a cookie, build a cookie
         if (conversationId == null || conversationId.isEmpty())
         {
             conversationId = UUID.randomUUID().toString();
@@ -250,6 +250,7 @@ public class QuizController
             response.addCookie(cookie);
         }
 
+        // validation input
         if (ObjectUtils.isEmpty(userQuizBatchSubmitDTO)
                 || CollectionUtils.isEmpty(userQuizBatchSubmitDTO.getQuizList()))
         {
@@ -257,10 +258,12 @@ public class QuizController
         }
 
         StringBuilder aiAnalysis = new StringBuilder();
+        // Search question category for send message to MQ
         Long id = userQuizBatchSubmitDTO.getQuizList().get(0).getQuestionId();
         QuestionBody questionDetails = questionBodyService.getById(id);
         String questionCategory = questionDetails.getQuestionCategory();
 
+        // search question body, question options, and question right answer, and build AI prompt
         for (UserQuizSubmitDTO userQuizSubmitDTO : userQuizBatchSubmitDTO.getQuizList())
         {
             Long questionId = userQuizSubmitDTO.getQuestionId();
@@ -274,6 +277,7 @@ public class QuizController
             QuestionAnswer questionAnswer = questionAnswerService.getOne(
                     new QueryWrapper<QuestionAnswer>().eq("questionId", questionId));
 
+            // build prompt
             aiAnalysis.append("Question: ").append(questionBody.getQuestionDetails()).append("\n")
                     .append("Options: ").append("\n")
                     .append("A.").append(questionAnswer.getOptionA()).append("\n")
@@ -284,7 +288,7 @@ public class QuizController
                     .append("Right Answer: ").append(questionAnswer.getCorrectAnswer()).append("\n\n");
         }
 
-        // ✅ 发送到消息队列
+        // send message to MQ
         quizResultAIMessageProducer.sendMessage(aiAnalysis.toString(), conversationId, questionCategory);
         return ResultUtils.success("ok");
     }

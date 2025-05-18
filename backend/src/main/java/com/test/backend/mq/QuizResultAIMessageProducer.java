@@ -16,6 +16,7 @@ public class QuizResultAIMessageProducer
 
     public void sendMessage(String message, String conversationId, String questionCategory)
     {
+        // build MQ message
         AiAnalysisResultDTO aiAnalysisResultDTO = new AiAnalysisResultDTO();
         aiAnalysisResultDTO.setMessage(message);
         aiAnalysisResultDTO.setConversationId(conversationId);

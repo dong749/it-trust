@@ -131,7 +131,7 @@ const QuizStepPage: React.FC = () => {
   return (
     <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', paddingBottom: 120, color: '#000' }}>
       <div style={{ position: 'relative', zIndex: 1, padding: 24 }}>
-        <h2>Q{currentIndex + 1}:</h2>
+        <h2 style={{ color: '#fff' }}>Q{currentIndex + 1}:</h2>
 
         <AnimatePresence mode="wait">
           <motion.div

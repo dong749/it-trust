@@ -164,7 +164,7 @@ const Welcome: React.FC = () => {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4A90E2')}
         onClick={() => navigate('/visualization')}
       >
-        Lets Protect Your Data
+        Learn more About Personal Data and Privacy Breach Trends
       </button>
 
       {/* 右下角图 */}
@@ -188,7 +188,7 @@ const Welcome: React.FC = () => {
         style={{
           position: 'absolute',
           bottom: '18%',
-          left: '8%',
+          left: '3%',
           width: '160px',
           height: '180px',
           zIndex: 1000,
@@ -204,20 +204,23 @@ const Welcome: React.FC = () => {
       >
         <div
           style={{
-            fontSize: '12px',
+            fontSize: '16px',
             fontWeight: 'bold',
-            color: '#4A90E2',
+            color: '#fff',
             textAlign: 'center',
             marginBottom: '6px',
-            fontFamily: 'cursive',
-            lineHeight: '1.2',
-            textShadow: '0 0 3px rgba(0,0,0,0.2)',
+            fontFamily: '"Comic Sans MS", cursive, sans-serif',
+            lineHeight: '1.4',
+            textShadow: '1px 1px 4px rgba(0, 0, 0, 0.6)',
+            transform: 'rotate(-10deg)',
           }}
         >
-          I am a Data Protector,<br />
+          I am a Data Protector,
+          <br />
           Click me you can ask me <br />
           anything about data security
         </div>
+
         <Lottie
           lottieRef={lottieRef}
           animationData={ChatbotAnimation}

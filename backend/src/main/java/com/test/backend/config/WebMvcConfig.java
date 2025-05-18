@@ -15,6 +15,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(cookieLimitInterceptor)
-                .addPathPatterns("/**"); // 你也可以只限制 `/chatbot` 请求路径
+                .addPathPatterns("/**");
     }
 }
